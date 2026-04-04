@@ -1,0 +1,18 @@
+ (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
+diff --git a/src/pages/index.astro b/src/pages/index.astro
+new file mode 100644
+index 0000000000000000000000000000000000000000..950308b4d930f67e1fdc1018db7fc377a5c996c2
+--- /dev/null
++++ b/src/pages/index.astro
+@@ -0,0 +1,8 @@
++---
++import BaseLayout from '../layouts/BaseLayout.astro';
++import ImposterGame from '../components/ImposterGame.astro';
++---
++
++<BaseLayout title="Imposter-spill i Astro">
++  <ImposterGame />
++</BaseLayout>
+ 
+EOF
+)
