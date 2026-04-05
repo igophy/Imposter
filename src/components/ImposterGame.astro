@@ -1,0 +1,271 @@
+<main class="app">
+  <section id="setup" class="grid">
+    <h1>🎭 Imposter-spill</h1>
+    <p class="muted">Velg antall spillere, skriv inn navn og start runden.</p>
+
+    <label>
+      Antall spillere
+      <select id="playerCount">
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6" selected>6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+      </select>
+    </label>
+
+    <div id="playerInputs" class="players"></div>
+    <p id="setupError" class="error hidden" role="alert"></p>
+    <button id="startBtn">Start spill</button>
+  </section>
+
+  <section id="phonePass" class="hidden grid">
+    <h2 class="center">📱 Send telefonen videre</h2>
+    <div class="card center">
+      <p class="muted">Telefonen skal gis til:</p>
+      <p id="currentName" class="big"></p>
+      <p class="muted">Trykk når spilleren er klar til å se sin rolle.</p>
+      <button id="showRoleBtn">Vis rolle</button>
+    </div>
+  </section>
+
+  <section id="roleReveal" class="hidden grid">
+    <h2 class="center">🔒 Kun denne spilleren skal se skjermen</h2>
+    <div class="card center">
+      <p id="roleForName" class="muted"></p>
+      <p id="roleWord" class="big"></p>
+      <p id="imposterHint" class="hint hidden"></p>
+      <button id="hideRoleBtn" class="secondary">Skjul og send videre</button>
+    </div>
+  </section>
+
+  <section id="discussion" class="hidden grid">
+    <h2>🗣️ Snakkerunden</h2>
+    <div class="card">
+      <p>Alle sier én ting om ordet på rundgang.</p>
+      <p>Den som starter er: <strong id="starterName"></strong></p>
+      <p>Foreslått rekkefølge:</p>
+      <ol id="turnOrder"></ol>
+      <p class="muted">Tips: Imposteren kan bruke hintet for å høres troverdig ut.</p>
+    </div>
+    <button id="toVotingBtn">Vi er ferdige – gå til gjetting</button>
+  </section>
+
+  <section id="voting" class="hidden grid">
+    <h2>🕵️ Hvem er imposteren?</h2>
+    <p>Diskuter og stem. Velg hvem dere tror er imposteren:</p>
+    <select id="voteSelect"></select>
+    <button id="revealAnswerBtn" class="danger">Vis fasit</button>
+  </section>
+
+  <section id="result" class="hidden grid">
+    <h2>✅ Fasit</h2>
+    <div class="card">
+      <p>Det hemmelige ordet var: <strong id="resultWord"></strong></p>
+      <p>Imposteren var: <strong id="resultImposter"></strong></p>
+      <p>Dere gjettet: <strong id="resultGuess"></strong> <span id="guessOutcome"></span></p>
+      <div class="tags" id="playerRolesSummary"></div>
+    </div>
+    <button id="restartBtn">Start nytt spill</button>
+  </section>
+</main>
+
+<script>
+  const WORDS = [
+    { word: 'Pizza', hint: 'Snakk om lukt, tekstur eller noe man kan bestille.' },
+    { word: 'Strand', hint: 'Nevn et sted ute, vær eller sommerfølelse.' },
+    { word: 'Tog', hint: 'Snakk om reise, fart eller noe som går i ruter.' },
+    { word: 'Sjokolade', hint: 'Snakk om smak, søtt eller noe man kan spise.' },
+    { word: 'Fotball', hint: 'Nevn lag, kamp, mål eller publikum.' },
+    { word: 'Fjell', hint: 'Snakk om natur, høyde, tur eller utsikt.' },
+    { word: 'Mobil', hint: 'Snakk om teknologi, apper eller kommunikasjon.' },
+    { word: 'Sykkel', hint: 'Nevn transport, balanse eller aktivitet ute.' },
+    { word: 'Kaffe', hint: 'Snakk om drikke, lukt, morgen eller energi.' },
+    { word: 'Regn', hint: 'Nevn vær, klær eller noe som skjer ute.' }
+  ];
+
+  const $ = (id) => document.getElementById(id);
+
+  const setupSection = $('setup');
+  const phonePassSection = $('phonePass');
+  const roleRevealSection = $('roleReveal');
+  const discussionSection = $('discussion');
+  const votingSection = $('voting');
+  const resultSection = $('result');
+
+  const playerCountEl = $('playerCount');
+  const playerInputsEl = $('playerInputs');
+
+  let state = {};
+
+  function showSection(section) {
+    [setupSection, phonePassSection, roleRevealSection, discussionSection, votingSection, resultSection]
+      .forEach((s) => s.classList.add('hidden'));
+    section.classList.remove('hidden');
+  }
+
+  function showSetupError(message) {
+    const errorEl = $('setupError');
+    errorEl.textContent = message;
+    errorEl.classList.remove('hidden');
+  }
+
+  function clearSetupError() {
+    const errorEl = $('setupError');
+    errorEl.textContent = '';
+    errorEl.classList.add('hidden');
+  }
+
+  function createPlayerInputs() {
+    playerInputsEl.innerHTML = '';
+    const count = Number(playerCountEl.value);
+    for (let i = 0; i < count; i++) {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = `Spiller ${i + 1}`;
+      input.value = `Spiller ${i + 1}`;
+      input.maxLength = 24;
+      input.dataset.index = String(i);
+      playerInputsEl.appendChild(input);
+    }
+  }
+
+  function collectNames() {
+    return [...playerInputsEl.querySelectorAll('input')].map((el) => el.value.trim());
+  }
+
+  function getTurnOrder(players, starterName) {
+    const startIndex = players.findIndex((name) => name === starterName);
+    if (startIndex < 0) return players;
+    return [...players.slice(startIndex), ...players.slice(0, startIndex)];
+  }
+
+  function startGame() {
+    const names = collectNames();
+    const unique = new Set(names.map((n) => n.toLowerCase()));
+    const emptyIndex = names.findIndex((n) => !n);
+    clearSetupError();
+
+    if (emptyIndex !== -1) {
+      showSetupError(`Spillernavn mangler for spiller ${emptyIndex + 1}.`);
+      return;
+    }
+    if (unique.size !== names.length) {
+      showSetupError('Alle spillernavn må være unike.');
+      return;
+    }
+
+    const chosen = WORDS[Math.floor(Math.random() * WORDS.length)];
+    const imposterIndex = Math.floor(Math.random() * names.length);
+    const starter = names[Math.floor(Math.random() * names.length)];
+
+    state = {
+      players: names,
+      word: chosen.word,
+      hint: chosen.hint,
+      imposterIndex,
+      starter,
+      revealIndex: 0,
+      guess: null
+    };
+
+    showCurrentPhonePass();
+  }
+
+  function showCurrentPhonePass() {
+    if (state.revealIndex >= state.players.length) {
+      $('starterName').textContent = state.starter;
+      const order = getTurnOrder(state.players, state.starter);
+      const orderEl = $('turnOrder');
+      orderEl.innerHTML = '';
+      order.forEach((name) => {
+        const li = document.createElement('li');
+        li.textContent = name;
+        orderEl.appendChild(li);
+      });
+      showSection(discussionSection);
+      return;
+    }
+    const currentPlayer = state.players[state.revealIndex];
+    $('currentName').textContent = currentPlayer;
+    showSection(phonePassSection);
+  }
+
+  function revealRole() {
+    const idx = state.revealIndex;
+    const name = state.players[idx];
+    const isImposter = idx === state.imposterIndex;
+
+    $('roleForName').textContent = name;
+    $('roleWord').textContent = isImposter ? 'IMPOSTER' : state.word;
+
+    const hintEl = $('imposterHint');
+    hintEl.textContent = isImposter
+      ? `Hint: ${state.hint}`
+      : 'Du er ikke imposter. Husk ordet og spill smart.';
+    hintEl.classList.remove('hidden');
+
+    showSection(roleRevealSection);
+  }
+
+  function hideRoleAndContinue() {
+    state.revealIndex += 1;
+    showCurrentPhonePass();
+  }
+
+  function openVoting() {
+    const select = $('voteSelect');
+    select.innerHTML = '';
+    state.players.forEach((name, i) => {
+      const option = document.createElement('option');
+      option.value = String(i);
+      option.textContent = name;
+      select.appendChild(option);
+    });
+    showSection(votingSection);
+  }
+
+  function revealAnswer() {
+    state.guess = Number($('voteSelect').value);
+    const imposterName = state.players[state.imposterIndex];
+    const guessName = state.players[state.guess];
+    const correct = state.guess === state.imposterIndex;
+
+    $('resultWord').textContent = state.word;
+    $('resultImposter').textContent = imposterName;
+    $('resultGuess').textContent = guessName;
+    $('guessOutcome').textContent = correct ? '(Riktig 🎉)' : '(Feil 😅)';
+    $('guessOutcome').className = correct ? 'ok' : 'warn';
+
+    const summary = $('playerRolesSummary');
+    summary.innerHTML = '';
+    state.players.forEach((name, i) => {
+      const chip = document.createElement('span');
+      chip.className = 'tag';
+      chip.textContent = i === state.imposterIndex ? `${name}: Imposter` : `${name}: Vanlig spiller`;
+      summary.appendChild(chip);
+    });
+
+    showSection(resultSection);
+  }
+
+  function restart() {
+    state = {};
+    createPlayerInputs();
+    clearSetupError();
+    showSection(setupSection);
+  }
+
+  playerCountEl.addEventListener('change', createPlayerInputs);
+  $('startBtn').addEventListener('click', startGame);
+  $('showRoleBtn').addEventListener('click', revealRole);
+  $('hideRoleBtn').addEventListener('click', hideRoleAndContinue);
+  $('toVotingBtn').addEventListener('click', openVoting);
+  $('revealAnswerBtn').addEventListener('click', revealAnswer);
+  $('restartBtn').addEventListener('click', restart);
+
+  createPlayerInputs();
+</script>
