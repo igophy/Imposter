@@ -133,8 +133,12 @@
     }
   }
 
+  function normalizeName(value) {
+    return value.trim().replace(/\s+/g, ' ');
+  }
+
   function collectNames() {
-    return [...playerInputsEl.querySelectorAll('input')].map((el) => el.value.trim());
+    return [...playerInputsEl.querySelectorAll('input')].map((el) => normalizeName(el.value));
   }
 
   function getTurnOrder(players, starterName) {
@@ -145,7 +149,7 @@
 
   function startGame() {
     const names = collectNames();
-    const unique = new Set(names.map((n) => n.toLowerCase()));
+    const unique = new Set(names.map((n) => n.toLocaleLowerCase('nb-NO')));
     const emptyIndex = names.findIndex((n) => !n);
     clearSetupError();
 
@@ -176,6 +180,11 @@
   }
 
   function showCurrentPhonePass() {
+    if (!Array.isArray(state.players) || state.players.length === 0) {
+      restart();
+      return;
+    }
+
     if (state.revealIndex >= state.players.length) {
       $('starterName').textContent = state.starter;
       const order = getTurnOrder(state.players, state.starter);
@@ -195,6 +204,11 @@
   }
 
   function revealRole() {
+    if (!Array.isArray(state.players) || state.revealIndex == null) {
+      restart();
+      return;
+    }
+
     const idx = state.revealIndex;
     const name = state.players[idx];
     const isImposter = idx === state.imposterIndex;
@@ -217,6 +231,11 @@
   }
 
   function openVoting() {
+    if (!Array.isArray(state.players) || state.players.length === 0) {
+      restart();
+      return;
+    }
+
     const select = $('voteSelect');
     select.innerHTML = '';
     state.players.forEach((name, i) => {
@@ -229,6 +248,11 @@
   }
 
   function revealAnswer() {
+    if (!Array.isArray(state.players) || state.players.length === 0) {
+      restart();
+      return;
+    }
+
     state.guess = Number($('voteSelect').value);
     const imposterName = state.players[state.imposterIndex];
     const guessName = state.players[state.guess];
