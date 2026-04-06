@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Imposter</title>
+    <title>Imposter - Stor Utgave</title>
     <style>
         :root {
             --primary: #ff4757;
@@ -30,7 +30,7 @@
         .screen {
             display: none;
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
             background: var(--surface);
             padding: 30px 20px;
             border-radius: 15px;
@@ -51,8 +51,6 @@
             text-transform: uppercase;
             letter-spacing: 2px;
         }
-
-        h2 { margin: 0; font-size: 1.5em; }
 
         input {
             padding: 15px;
@@ -79,13 +77,8 @@
             width: 100%;
         }
 
-        button:active {
-            transform: scale(0.98);
-        }
-
-        button.alt {
-            background-color: var(--success);
-        }
+        button:active { transform: scale(0.98); }
+        button.alt { background-color: var(--success); }
 
         #nameInputsContainer {
             display: flex;
@@ -102,29 +95,17 @@
             border: 2px dashed var(--text);
         }
         
-        .secret-word {
-            font-size: 2em;
-            color: var(--success);
-            font-weight: bold;
-            margin: 10px 0;
-            text-transform: uppercase;
-        }
-
-        .imposter-word {
-            font-size: 2.5em;
-            color: var(--primary);
-            font-weight: bold;
-            margin: 10px 0;
-            text-transform: uppercase;
-        }
+        .secret-word { font-size: 2.2em; color: var(--success); font-weight: bold; text-transform: uppercase; }
+        .imposter-word { font-size: 2.5em; color: var(--primary); font-weight: bold; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
     <div id="setupScreen" class="screen active">
         <h1>Imposter</h1>
+        <p>Hvem er den hemmelige spionen?</p>
         <div>
-            <label for="playerCount">Antall spillere (min 3):</label>
+            <label>Antall spillere (3-15):</label>
             <input type="number" id="playerCount" min="3" max="15" value="4">
         </div>
         <button onclick="generateNameInputs()">Gå videre</button>
@@ -138,110 +119,89 @@
 
     <div id="passScreen" class="screen">
         <h2>Send telefonen til:</h2>
-        <h1 id="passTargetName" style="color: var(--success); font-size: 3em;">Navn</h1>
-        <p>Ikke la noen andre se skjermen din!</p>
-        <button onclick="showSecret()">Jeg er klar, vis ordet</button>
+        <h1 id="passTargetName" style="color: var(--success); font-size: 3.5em;">Navn</h1>
+        <p>Hold skjermen skjult for andre!</p>
+        <button onclick="showSecret()">Vis ordet</button>
     </div>
 
     <div id="revealScreen" class="screen">
         <h2>Din hemmelighet:</h2>
-        <div id="secretContainer" class="secret-box">
-            </div>
-        <button onclick="nextPlayer()">Skjul og gi videre</button>
+        <div id="secretContainer" class="secret-box"></div>
+        <button onclick="nextPlayer()">Ferdig - skjul skjerm</button>
     </div>
 
     <div id="playScreen" class="screen">
-        <h2>Alle har sett ordet!</h2>
-        <p>På rundgang skal alle si én ting om ordet for å bevise at de vet hva det er, uten å avsløre det for Imposteren.</p>
+        <h2>Runden starter!</h2>
         <div class="secret-box">
-            <h3>Den som starter runden er:</h3>
+            <h3>Den som starter å snakke:</h3>
             <h1 id="starterName" style="color: var(--success);">Navn</h1>
         </div>
-        <p>Når runden er ferdig, skal dere diskutere og stemme på hvem dere tror Imposteren er.</p>
-        <button class="alt" onclick="showFasit()">Vis Fasit!</button>
+        <p>Si én setning som hinter til ordet. Til slutt skal dere stemme på hvem som lyver!</p>
+        <button class="alt" onclick="showFasit()">Vis Fasit</button>
     </div>
 
     <div id="resultScreen" class="screen">
-        <h2>Fasit</h2>
+        <h2>Resultat</h2>
         <p>Ordet var:</p>
         <h1 id="resultWord" style="color: var(--success);">ORDET</h1>
         <p>Imposteren var:</p>
         <h1 id="resultImposter" style="color: var(--primary);">NAVN</h1>
-        <button onclick="resetGame()">Spill igjen med samme gjeng</button>
-        <button class="alt" style="margin-top: 10px;" onclick="location.reload()">Nytt spill / Nye spillere</button>
+        <button onclick="resetGame()">Ny runde (samme folk)</button>
+        <button class="alt" style="margin-top: 10px;" onclick="location.reload()">Helt nytt spill</button>
     </div>
 
     <script>
-         // Utvidet ordbank med over 60 ord i ulike kategorier
+        // MASSIV ORDBANK
         const wordBank = [
-            // Dyr
-            { word: "Katt", hint: "Kjæledyr" },
-            { word: "Hund", hint: "Kjæledyr" },
-            { word: "Elefant", hint: "Stort dyr på savannen" },
-            { word: "Pingvin", hint: "En fugl som ikke kan fly" },
-            { word: "Slange", hint: "Krypdyr" },
-            { word: "Hest", hint: "Dyr man kan ri på" },
-            { word: "Edderkopp", hint: "Dyr med mange bein" },
-            { word: "Hai", hint: "Sjødyr/Fisk" },
+            // DYR
+            { word: "Løve", hint: "Et dyr på savannen" },
+            { word: "Elefant", hint: "Et veldig stort landdyr" },
+            { word: "Gullfisk", hint: "Noe som lever i vann" },
+            { word: "Krokodille", hint: "Et farlig krypdyr" },
+            { word: "Pingvin", hint: "En fugl som liker kulde" },
+            { word: "Sjiraff", hint: "Et dyr med lang hals" },
+            { word: "Elg", hint: "Skogens konge" },
+            { word: "Kangaroo", hint: "Et dyr som hopper" },
             
-            // Mat og Drikke
-            { word: "Eple", hint: "Frukt" },
-            { word: "Banan", hint: "Frukt" },
-            { word: "Pizza", hint: "Matrett" },
-            { word: "Taco", hint: "Matrett fra Mexico" },
-            { word: "Sushi", hint: "Matrett fra Asia" },
-            { word: "Hamburger", hint: "Hurtigmat" },
-            { word: "Iskrem", hint: "Dessert" },
-            { word: "Kaffe", hint: "Noe man drikker" },
-            { word: "Øl", hint: "Alkoholdrikk" },
-            { word: "Ost", hint: "Pålegg / Meieriprodukt" },
+            // MAT OG DRIKKE
+            { word: "Sushi", hint: "Mat fra Japan" },
+            { word: "Spagetti", hint: "Mat fra Italia" },
+            { word: "Vaffel", hint: "Noe søtt vi spiser i Norge" },
+            { word: "Bacon", hint: "Noe man steker til frokost" },
+            { word: "Ananas", hint: "En tropisk frukt" },
+            { word: "Milkshake", hint: "En kald drikke" },
+            { word: "Kebab", hint: "Hurtigmat" },
             
-            // Transport
-            { word: "Sykkel", hint: "Fremkomstmiddel" },
-            { word: "Fly", hint: "Transport i luften" },
-            { word: "Tog", hint: "Fremkomstmiddel på skinner" },
-            { word: "Båt", hint: "Transport på vann" },
-            { word: "Buss", hint: "Kollektivtransport" },
-            { word: "Helikopter", hint: "Transport i luften" },
-            { word: "Ubåt", hint: "Transport under vann" },
+            // STEDER OG BYGNINGER
+            { word: "Kino", hint: "Et sted for underholdning" },
+            { word: "Bibliotek", hint: "Et sted med mye stillhet" },
+            { word: "Nordpolen", hint: "Et veldig kaldt sted" },
+            { word: "Tivoli", hint: "Et sted med karuseller" },
+            { word: "Sykehus", hint: "Et sted man drar hvis man er syk" },
+            { word: "Flyplass", hint: "Starten på en reise" },
             
-            // Ting og Objekter
-            { word: "Gitar", hint: "Musikkinstrument" },
-            { word: "Piano", hint: "Musikkinstrument" },
-            { word: "Bok", hint: "Noe man leser" },
-            { word: "Internett", hint: "Teknologi" },
-            { word: "Seng", hint: "Møbel i huset" },
-            { word: "Paraply", hint: "Ting for å beskytte mot været" },
-            { word: "Speil", hint: "Ting som henger på veggen" },
-            { word: "Tannbørste", hint: "Hygieneartikkel" },
-            { word: "Klokke", hint: "Noe som viser tid" },
-            { word: "Saks", hint: "Verktøy / Kontorrekvisita" },
-            { word: "Nøkkel", hint: "Ting for å åpne noe" },
+            // OBJEKTER
+            { word: "Paraply", hint: "Beskytter mot regn" },
+            { word: "Tannbørste", hint: "Noe vi bruker hver morgen" },
+            { word: "Solbriller", hint: "Noe man har i ansiktet" },
+            { word: "Mikrobølgeovn", hint: "Varmer opp mat kjapt" },
+            { word: "Lommelykt", hint: "Lyser opp i mørket" },
+            { word: "Støvsuger", hint: "Noe som bråker når man vasker" },
             
-            // Steder
-            { word: "Oslo", hint: "En norsk by" },
-            { word: "Paris", hint: "En europeisk by" },
-            { word: "Sykehus", hint: "En bygning" },
-            { word: "Skole", hint: "Sted for læring" },
-            { word: "Fengsel", hint: "Sted for kriminelle" },
-            { word: "Kino", hint: "Sted for underholdning" },
-            { word: "Strand", hint: "Sted i naturen" },
-            { word: "Fjell", hint: "Sted i naturen" },
-            
-            // Yrker
-            { word: "Politi", hint: "Et yrke" },
-            { word: "Lege", hint: "Et yrke innen helse" },
-            { word: "Brannmann", hint: "Et yrke som redder liv" },
-            { word: "Lærer", hint: "Yrke på en skole" },
-            { word: "Snekker", hint: "Håndverker-yrke" },
-            { word: "Astronaut", hint: "Et yrke i verdensrommet" },
-            
-            // Klær og Sport
-            { word: "Fotball", hint: "Sport" },
-            { word: "Ski", hint: "Vintersport" },
-            { word: "Sko", hint: "Noe man har på føttene" },
-            { word: "Bukse", hint: "Klesplagg" },
-            { word: "Jakke", hint: "Yttertøy" }
+            // YRKER OG PERSONER
+            { word: "Pirat", hint: "En person på havet" },
+            { word: "Julenissen", hint: "En kjent person i desember" },
+            { word: "Ninja", hint: "En person som er veldig stille" },
+            { word: "Astronaut", hint: "En person som reiser langt" },
+            { word: "Politi", hint: "Noen som passer på loven" },
+            { word: "Tannlege", hint: "Noen som ser deg i munnen" },
+
+            // SPORT OG FRITID
+            { word: "Sjakk", hint: "Et spill for hjernen" },
+            { word: "Bowling", hint: "En sport med tunge kuler" },
+            { word: "Karate", hint: "En kampsport" },
+            { word: "Minecraft", hint: "Et kjent dataspill" },
+            { word: "Trampoline", hint: "Noe man hopper på" }
         ];
 
         let players = [];
@@ -257,47 +217,28 @@
 
         function generateNameInputs() {
             const count = parseInt(document.getElementById('playerCount').value);
-            if (count < 3) {
-                alert("Dere må være minst 3 spillere!");
-                return;
-            }
+            if (count < 3) return alert("Minimum 3 spillere!");
             
             const container = document.getElementById('nameInputsContainer');
             container.innerHTML = '';
-            
             for (let i = 0; i < count; i++) {
                 const input = document.createElement('input');
                 input.type = 'text';
-                input.placeholder = `Spiller ${i + 1} navn`;
+                input.placeholder = `Navn på spiller ${i + 1}`;
                 input.className = 'playerNameInput';
                 container.appendChild(input);
             }
-            
             switchScreen('namesScreen');
         }
 
         function startGame() {
             const inputs = document.querySelectorAll('.playerNameInput');
-            players = [];
+            players = Array.from(inputs).map((input, i) => input.value.trim() || `Spiller ${i+1}`);
             
-            inputs.forEach(input => {
-                if (input.value.trim() !== '') {
-                    players.push(input.value.trim());
-                } else {
-                    players.push(`Spiller ${players.length + 1}`);
-                }
-            });
-
-            // Velg et tilfeldig ord fra ordbanken
             const randomWordIndex = Math.floor(Math.random() * wordBank.length);
             currentSecret = wordBank[randomWordIndex];
-
-            // Velg tilfeldig Imposter
             imposterIndex = Math.floor(Math.random() * players.length);
-
-            // Velg tilfeldig hvem som skal starte å snakke
             starterIndex = Math.floor(Math.random() * players.length);
-
             currentPlayerIndex = 0;
             preparePassScreen();
         }
@@ -309,36 +250,29 @@
 
         function showSecret() {
             const container = document.getElementById('secretContainer');
-            
             if (currentPlayerIndex === imposterIndex) {
                 container.innerHTML = `
                     <p>Du er...</p>
                     <div class="imposter-word">IMPOSTER</div>
-                    <p><strong>Hint til ordet:</strong><br>${currentSecret.hint}</p>
+                    <p style="margin-top:15px;"><strong>Hint til ordet:</strong><br>${currentSecret.hint}</p>
                 `;
             } else {
                 container.innerHTML = `
-                    <p>Du er IKKE imposter. Ordet er:</p>
+                    <p>Du er vanlig spiller. Ordet er:</p>
                     <div class="secret-word">${currentSecret.word}</div>
                 `;
             }
-            
             switchScreen('revealScreen');
         }
 
         function nextPlayer() {
             currentPlayerIndex++;
-            
             if (currentPlayerIndex < players.length) {
                 preparePassScreen();
             } else {
-                startDiscussion();
+                document.getElementById('starterName').innerText = players[starterIndex];
+                switchScreen('playScreen');
             }
-        }
-
-        function startDiscussion() {
-            document.getElementById('starterName').innerText = players[starterIndex];
-            switchScreen('playScreen');
         }
 
         function showFasit() {
@@ -348,7 +282,6 @@
         }
 
         function resetGame() {
-            // Starter et nytt spill med samme spillere
             const randomWordIndex = Math.floor(Math.random() * wordBank.length);
             currentSecret = wordBank[randomWordIndex];
             imposterIndex = Math.floor(Math.random() * players.length);
