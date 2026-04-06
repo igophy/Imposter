@@ -172,26 +172,76 @@
     </div>
 
     <script>
-        // Ordbank med hint for Imposteren
+         // Utvidet ordbank med over 60 ord i ulike kategorier
         const wordBank = [
+            // Dyr
             { word: "Katt", hint: "Kjæledyr" },
             { word: "Hund", hint: "Kjæledyr" },
+            { word: "Elefant", hint: "Stort dyr på savannen" },
+            { word: "Pingvin", hint: "En fugl som ikke kan fly" },
+            { word: "Slange", hint: "Krypdyr" },
+            { word: "Hest", hint: "Dyr man kan ri på" },
+            { word: "Edderkopp", hint: "Dyr med mange bein" },
+            { word: "Hai", hint: "Sjødyr/Fisk" },
+            
+            // Mat og Drikke
             { word: "Eple", hint: "Frukt" },
             { word: "Banan", hint: "Frukt" },
-            { word: "Sykkel", hint: "Fremkomstmiddel" },
-            { word: "Fly", hint: "Fremkomstmiddel" },
-            { word: "Kaffe", hint: "Noe man drikker" },
             { word: "Pizza", hint: "Matrett" },
-            { word: "Taco", hint: "Matrett" },
+            { word: "Taco", hint: "Matrett fra Mexico" },
+            { word: "Sushi", hint: "Matrett fra Asia" },
+            { word: "Hamburger", hint: "Hurtigmat" },
+            { word: "Iskrem", hint: "Dessert" },
+            { word: "Kaffe", hint: "Noe man drikker" },
+            { word: "Øl", hint: "Alkoholdrikk" },
+            { word: "Ost", hint: "Pålegg / Meieriprodukt" },
+            
+            // Transport
+            { word: "Sykkel", hint: "Fremkomstmiddel" },
+            { word: "Fly", hint: "Transport i luften" },
+            { word: "Tog", hint: "Fremkomstmiddel på skinner" },
+            { word: "Båt", hint: "Transport på vann" },
+            { word: "Buss", hint: "Kollektivtransport" },
+            { word: "Helikopter", hint: "Transport i luften" },
+            { word: "Ubåt", hint: "Transport under vann" },
+            
+            // Ting og Objekter
             { word: "Gitar", hint: "Musikkinstrument" },
-            { word: "Oslo", hint: "En by" },
-            { word: "Sjokolade", hint: "Godteri" },
-            { word: "Snø", hint: "Vær/Natur" },
-            { word: "Fotball", hint: "Sport" },
-            { word: "Bok", hint: "Gjenstand til underholdning/læring" },
+            { word: "Piano", hint: "Musikkinstrument" },
+            { word: "Bok", hint: "Noe man leser" },
             { word: "Internett", hint: "Teknologi" },
-            { word: "Seng", hint: "Møbel" },
-            { word: "Kino", hint: "Sted man drar for underholdning" }
+            { word: "Seng", hint: "Møbel i huset" },
+            { word: "Paraply", hint: "Ting for å beskytte mot været" },
+            { word: "Speil", hint: "Ting som henger på veggen" },
+            { word: "Tannbørste", hint: "Hygieneartikkel" },
+            { word: "Klokke", hint: "Noe som viser tid" },
+            { word: "Saks", hint: "Verktøy / Kontorrekvisita" },
+            { word: "Nøkkel", hint: "Ting for å åpne noe" },
+            
+            // Steder
+            { word: "Oslo", hint: "En norsk by" },
+            { word: "Paris", hint: "En europeisk by" },
+            { word: "Sykehus", hint: "En bygning" },
+            { word: "Skole", hint: "Sted for læring" },
+            { word: "Fengsel", hint: "Sted for kriminelle" },
+            { word: "Kino", hint: "Sted for underholdning" },
+            { word: "Strand", hint: "Sted i naturen" },
+            { word: "Fjell", hint: "Sted i naturen" },
+            
+            // Yrker
+            { word: "Politi", hint: "Et yrke" },
+            { word: "Lege", hint: "Et yrke innen helse" },
+            { word: "Brannmann", hint: "Et yrke som redder liv" },
+            { word: "Lærer", hint: "Yrke på en skole" },
+            { word: "Snekker", hint: "Håndverker-yrke" },
+            { word: "Astronaut", hint: "Et yrke i verdensrommet" },
+            
+            // Klær og Sport
+            { word: "Fotball", hint: "Sport" },
+            { word: "Ski", hint: "Vintersport" },
+            { word: "Sko", hint: "Noe man har på føttene" },
+            { word: "Bukse", hint: "Klesplagg" },
+            { word: "Jakke", hint: "Yttertøy" }
         ];
 
         let players = [];
