@@ -1,10 +1,5 @@
-/* sw.js
- * Robust, enkel service worker for statisk webapp/PWA.
- * Legg denne ved siden av index.html, eller i public/ slik at den havner i rot etter build.
- */
-
-const CACHE_VERSION = "2026.06.20-1";
-const CACHE_NAME = `app-shell-${CACHE_VERSION}`;
+const CACHE_VERSION = "2026.06.21-1";
+const CACHE_NAME = `imposter-shell-${CACHE_VERSION}`;
 
 const CORE_ASSETS = [
   "./",
@@ -12,11 +7,7 @@ const CORE_ASSETS = [
   "./manifest.webmanifest",
   "./pwa.css",
   "./pwa-app-shell.js",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png",
-  "./icons/maskable-512.png",
-  "./icons/apple-touch-icon.png",
-  "./icons/favicon-32.png"
+  "./icon.svg"
 ];
 
 const STATIC_ASSET_RE = /\.(?:css|js|mjs|png|jpg|jpeg|svg|webp|gif|ico|woff2?|ttf)$/i;
@@ -25,10 +16,8 @@ function shouldBypass(request) {
   if (request.method !== "GET") return true;
 
   const url = new URL(request.url);
-
   if (url.origin !== self.location.origin) return true;
 
-  // Ikke cache API/admin/feedback eller andre dynamiske endepunkter.
   if (
     url.pathname.includes("/api/") ||
     url.pathname.includes("/admin/") ||
@@ -78,8 +67,6 @@ self.addEventListener("fetch", event => {
 
   const url = new URL(request.url);
 
-  // Navigasjon: prøv nett først, fallback til cache.
-  // Dette gjør at nye deploys normalt blir plukket opp.
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request, { cache: "no-store" })
@@ -96,7 +83,6 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  // Statiske filer: stale-while-revalidate.
   if (STATIC_ASSET_RE.test(url.pathname) || url.pathname.endsWith("manifest.webmanifest")) {
     event.respondWith(
       caches.match(request, { ignoreSearch: true }).then(cached => {
