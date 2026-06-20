@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111827">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Imposter">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Imposter</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icon.svg">
+  <link rel="stylesheet" href="./pwa.css?v=2026.06.21-1">
+  <style>
+    :root {
+      --bg: #111827;
+      --panel: #1f2937;
+      --panel-2: #374151;
+      --text: #f9fafb;
+      --muted: #d1d5db;
+      --primary: #ff4757;
+      --primary-dark: #e11d48;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --border: rgba(255,255,255,.12);
+      --shadow: 0 20px 50px rgba(0,0,0,.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { min-height: 100%; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255,71,87,.24), transparent 34rem),
+        radial-gradient(circle at bottom right, rgba(34,197,94,.16), transparent 28rem),
+        var(--bg);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
+    }
+
+    main {
+      width: min(100%, 480px);
+    }
+
+    .screen {
+      display: none;
+      background: rgba(31,41,55,.94);
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+      min-height: 420px;
+    }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      animation: pop .16s ease-out;
+    }
+
+    @keyframes pop {
+      from { transform: translateY(8px); opacity: .75; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      color: var(--muted);
+      font-size: .86rem;
+      font-weight: 700;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    h1 {
+      color: var(--primary);
+      font-size: clamp(2.3rem, 13vw, 4.2rem);
+      line-height: .92;
+      letter-spacing: -.06em;
+      text-transform: uppercase;
+    }
+
+    h2 { font-size: clamp(1.6rem, 7vw, 2.2rem); line-height: 1.05; }
+    h3 { color: var(--muted); font-size: 1rem; }
+    p { color: var(--muted); line-height: 1.45; }
+
+    label {
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-weight: 700;
+      text-align: left;
+    }
+
+    input, select, button {
+      font: inherit;
+      width: 100%;
+    }
+
+    input, select {
+      border: 1px solid var(--border);
+      background: rgba(17,24,39,.78);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 15px 16px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: rgba(255,71,87,.8);
+      box-shadow: 0 0 0 4px rgba(255,71,87,.15);
+    }
+
+    button {
+      min-height: 52px;
+      border: 0;
+      border-radius: 16px;
+      padding: 14px 16px;
+      background: var(--primary);
+      color: white;
+      font-weight: 850;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(255,71,87,.18);
+    }
+
+    button:active { transform: translateY(1px) scale(.99); }
+    button.secondary { background: var(--panel-2); box-shadow: none; }
+    button.success { background: var(--success); box-shadow: 0 10px 22px rgba(34,197,94,.16); }
+    button.warning { background: var(--warning); color: #111827; box-shadow: none; }
+
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stack { display: grid; gap: 12px; }
+    .spacer { flex: 1; }
+
+    .names {
+      display: grid;
+      gap: 10px;
+      max-height: 42vh;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .card {
+      border-radius: 22px;
+      background: rgba(17,24,39,.74);
+      border: 1px solid var(--border);
+      padding: 18px;
+    }
+
+    .big-name {
+      color: var(--success);
+      font-size: clamp(2.4rem, 14vw, 4.6rem);
+      line-height: .9;
+      word-break: break-word;
+    }
+
+    .secret {
+      display: grid;
+      gap: 12px;
+      place-items: center;
+      min-height: 170px;
+      border: 2px dashed rgba(255,255,255,.2);
+      border-radius: 22px;
+      background: rgba(0,0,0,.18);
+      padding: 24px 16px;
+      text-align: center;
+    }
+
+    .secret-word {
+      color: var(--success);
+      font-weight: 950;
+      font-size: clamp(2rem, 11vw, 4rem);
+      line-height: .95;
+      text-transform: uppercase;
+    }
+
+    .imposter-word {
+      color: var(--primary);
+      font-weight: 950;
+      font-size: clamp(2rem, 11vw, 4rem);
+      line-height: .95;
+      text-transform: uppercase;
+    }
+
+    .small { font-size: .92rem; color: var(--muted); }
+    .center { text-align: center; }
+
+    .toast {
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      bottom: max(16px, env(safe-area-inset-bottom));
+      margin: 0 auto;
+      max-width: 480px;
+      background: #fff;
+      color: #111827;
+      border-radius: 18px;
+      padding: 14px 16px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.28);
+      z-index: 10000;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section id="setup" class="screen active">
+      <div class="topline">
+        <span class="badge">🎭 Imposter</span>
+        <span class="badge" id="roundBadge">Ny runde</span>
+      </div>
+      <div class="stack center">
+        <h1>Imposter</h1>
+        <p>Ett ord. Én imposter. Alle får se ordet — bortsett fra den som må late som.</p>
+      </div>
+
+      <div class="stack">
+        <label>
+          Antall spillere
+          <input id="playerCount" type="number" min="3" max="15" value="4" inputmode="numeric">
+        </label>
+        <label>
+          Kategori
+          <select id="categorySelect"></select>
+        </label>
+      </div>
+
+      <div class="spacer"></div>
+      <button type="button" onclick="goToNames()">Gå videre</button>
+    </section>
+
+    <section id="names" class="screen">
+      <div class="topline">
+        <span class="badge">👥 Spillere</span>
+        <button class="secondary" type="button" style="width:auto;min-height:40px;padding:8px 12px" onclick="showScreen('setup')">Tilbake</button>
+      </div>
+      <h2>Skriv inn navn</h2>
+      <div id="nameInputs" class="names"></div>
+      <div class="spacer"></div>
+      <button class="success" type="button" onclick="startGame()">Start spillet</button>
+    </section>
+
+    <section id="pass" class="screen">
+      <div class="topline">
+        <span class="badge" id="progressBadge">1 / 4</span>
+        <span class="badge">Skjult skjerm</span>
+      </div>
+      <div class="stack center">
+        <h2>Send telefonen til</h2>
+        <h1 id="passName" class="big-name">Navn</h1>
+        <p>Ingen andre må se skjermen.</p>
+      </div>
+      <div class="spacer"></div>
+      <button type="button" onclick="showSecret()">Vis min hemmelighet</button>
+    </section>
+
+    <section id="reveal" class="screen">
+      <div class="topline">
+        <span class="badge">🤫 Hemmelig</span>
+        <span class="badge" id="roleBadge">Rolle</span>
+      </div>
+      <div class="secret" id="secretBox"></div>
+      <p class="small center">Trykk ferdig før du sender telefonen videre.</p>
+      <div class="spacer"></div>
+      <button type="button" onclick="nextPlayer()">Ferdig – skjul skjerm</button>
+    </section>
+
+    <section id="play" class="screen">
+      <div class="topline">
+        <span class="badge">🎲 Runden starter</span>
+        <span class="badge" id="categoryBadge">Kategori</span>
+      </div>
+      <div class="card center stack">
+        <h3>Den som starter å snakke</h3>
+        <h1 id="starterName" class="big-name">Navn</h1>
+      </div>
+      <p>Alle sier én setning som hinter til ordet. Imposteren må bløffe. Til slutt stemmer dere på hvem som er imposter.</p>
+      <div class="spacer"></div>
+      <button class="warning" type="button" onclick="showResult()">Vis fasit</button>
+    </section>
+
+    <section id="result" class="screen">
+      <div class="topline">
+        <span class="badge">✅ Fasit</span>
+        <span class="badge" id="resultCategory">Kategori</span>
+      </div>
+      <div class="stack center">
+        <p>Ordet var</p>
+        <h1 id="resultWord" class="secret-word">ORD</h1>
+      </div>
+      <div class="stack center">
+        <p>Imposteren var</p>
+        <h1 id="resultImposter" class="imposter-word">NAVN</h1>
+      </div>
+      <div class="spacer"></div>
+      <div class="row">
+        <button type="button" onclick="restartSamePlayers()">Ny runde</button>
+        <button class="secondary" type="button" onclick="resetAll()">Nytt spill</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const wordBank = {
+      "Blandet": ["Pizza", "Kino", "Fotball", "Sykehus", "Strand", "Jul", "Taco", "Hytte", "Bursdag", "Flyplass", "Skole", "Kaffe", "Regn", "Mobil", "Bil", "Ferie", "Hund", "Katt", "Sofa", "Butikk"],
+      "Mat": ["Pizza", "Taco", "Sushi", "Hamburger", "Lasagne", "Pannekaker", "Vafler", "Iskrem", "Sjokolade", "Kebab", "Pasta", "Popcorn", "Brus", "Kake", "Grillmat"],
+      "Steder": ["Kino", "Skole", "Sykehus", "Flyplass", "Strand", "Fjell", "Hytte", "Butikk", "Bibliotek", "Restaurant", "Buss", "Tog", "Kontor", "Svømmehall", "Stadion"],
+      "Dyr": ["Hund", "Katt", "Løve", "Tiger", "Elefant", "Pingvin", "Delfin", "Hai", "Hest", "Kanin", "Rev", "Ulv", "Bjørn", "Ape", "Sau"],
+      "Ting": ["Mobil", "Nøkkel", "Sofa", "Ryggsekk", "TV", "Lader", "Sykkel", "Bok", "Klokke", "Sko", "Jakke", "Kopp", "Datamaskin", "Ball", "Kortstokk"]
+    };
+
+    const state = {
+      players: [],
+      currentIndex: 0,
+      imposterIndex: -1,
+      word: "",
+      category: "Blandet",
+      starterIndex: 0,
+      round: Number(localStorage.getItem("imposter_round") || "1")
+    };
+
+    const $ = id => document.getElementById(id);
+
+    function showScreen(id) {
+      document.querySelectorAll(".screen").forEach(screen => screen.classList.remove("active"));
+      $(id).classList.add("active");
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+
+    function toast(message) {
+      const old = document.querySelector(".toast");
+      if (old) old.remove();
+      const box = document.createElement("div");
+      box.className = "toast";
+      box.textContent = message;
+      document.body.appendChild(box);
+      setTimeout(() => box.remove(), 2600);
+    }
+
+    function initCategories() {
+      const select = $("categorySelect");
+      select.innerHTML = Object.keys(wordBank).map(category => `<option value="${category}">${category}</option>`).join("");
+    }
+
+    function goToNames() {
+      const count = Number($("playerCount").value);
+      if (!Number.isInteger(count) || count < 3 || count > 15) {
+        toast("Velg mellom 3 og 15 spillere.");
+        return;
+      }
+
+      const previous = state.players;
+      const container = $("nameInputs");
+      container.innerHTML = "";
+
+      for (let i = 0; i < count; i++) {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.autocomplete = "off";
+        input.placeholder = `Spiller ${i + 1}`;
+        input.value = previous[i] || "";
+        container.appendChild(input);
+      }
+
+      showScreen("names");
+      container.querySelector("input")?.focus();
+    }
+
+    function startGame() {
+      const inputs = Array.from($("nameInputs").querySelectorAll("input"));
+      const names = inputs.map((input, index) => input.value.trim() || `Spiller ${index + 1}`);
+      const unique = new Set(names.map(name => name.toLowerCase()));
+
+      if (names.length < 3) {
+        toast("Du trenger minst 3 spillere.");
+        return;
+      }
+
+      if (unique.size !== names.length) {
+        toast("Bruk ulike navn på spillerne.");
+        return;
+      }
+
+      state.players = names;
+      state.category = $("categorySelect").value || "Blandet";
+      const words = wordBank[state.category] || wordBank.Blandet;
+      state.word = words[Math.floor(Math.random() * words.length)];
+      state.imposterIndex = Math.floor(Math.random() * names.length);
+      state.starterIndex = Math.floor(Math.random() * names.length);
+      state.currentIndex = 0;
+
+      localStorage.setItem("imposter_players", JSON.stringify(names));
+      localStorage.setItem("imposter_category", state.category);
+
+      preparePassScreen();
+      showScreen("pass");
+    }
+
+    function preparePassScreen() {
+      $("passName").textContent = state.players[state.currentIndex];
+      $("progressBadge").textContent = `${state.currentIndex + 1} / ${state.players.length}`;
+    }
+
+    function showSecret() {
+      const isImposter = state.currentIndex === state.imposterIndex;
+      $("roleBadge").textContent = isImposter ? "Imposter" : "Spiller";
+      $("secretBox").innerHTML = isImposter
+        ? `<p>Du er</p><div class="imposter-word">IMPOSTER</div><p>Lat som du vet ordet. Kategorien er: <strong>${state.category}</strong></p>`
+        : `<p>Ordet er</p><div class="secret-word">${state.word}</div><p>Kategori: <strong>${state.category}</strong></p>`;
+      showScreen("reveal");
+    }
+
+    function nextPlayer() {
+      state.currentIndex += 1;
+      if (state.currentIndex >= state.players.length) {
+        $("starterName").textContent = state.players[state.starterIndex];
+        $("categoryBadge").textContent = state.category;
+        showScreen("play");
+        return;
+      }
+
+      preparePassScreen();
+      showScreen("pass");
+    }
+
+    function showResult() {
+      $("resultWord").textContent = state.word;
+      $("resultImposter").textContent = state.players[state.imposterIndex];
+      $("resultCategory").textContent = state.category;
+      showScreen("result");
+    }
+
+    function restartSamePlayers() {
+      state.round += 1;
+      localStorage.setItem("imposter_round", String(state.round));
+      $("roundBadge").textContent = `Runde ${state.round}`;
+      $("playerCount").value = String(state.players.length || 4);
+      $("categorySelect").value = state.category;
+      startGame();
+    }
+
+    function resetAll() {
+      state.players = [];
+      state.currentIndex = 0;
+      $("playerCount").value = "4";
+      $("roundBadge").textContent = "Ny runde";
+      showScreen("setup");
+    }
+
+    function restore() {
+      initCategories();
+      try {
+        const players = JSON.parse(localStorage.getItem("imposter_players") || "[]");
+        if (Array.isArray(players) && players.length >= 3) {
+          state.players = players;
+          $("playerCount").value = String(players.length);
+        }
+      } catch {}
+
+      const savedCategory = localStorage.getItem("imposter_category");
+      if (savedCategory && wordBank[savedCategory]) {
+        state.category = savedCategory;
+        $("categorySelect").value = savedCategory;
+      }
+
+      $("roundBadge").textContent = state.round > 1 ? `Runde ${state.round}` : "Ny runde";
+    }
+
+    restore();
+  </script>
+  <script src="./pwa-app-shell.js?v=2026.06.21-1" defer></script>
+</body>
+</html>
