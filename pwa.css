@@ -1,0 +1,103 @@
+/* pwa.css
+ * Generell styling for PWA-meldinger, installasjon, oppdatering og enkel mørkemodus.
+ * Kan legges ved siden av index.html og lenkes fra <head>.
+ */
+
+:root {
+  color-scheme: light;
+  --pwa-bg: #ffffff;
+  --pwa-text: #111827;
+  --pwa-card-bg: #ffffff;
+  --pwa-border: rgba(17, 24, 39, 0.12);
+  --pwa-shadow: 0 12px 40px rgba(17, 24, 39, 0.18);
+  --pwa-primary: #111827;
+  --pwa-primary-text: #ffffff;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --pwa-bg: #111827;
+  --pwa-text: #f9fafb;
+  --pwa-card-bg: #1f2937;
+  --pwa-border: rgba(249, 250, 251, 0.14);
+  --pwa-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  --pwa-primary: #f9fafb;
+  --pwa-primary-text: #111827;
+}
+
+html[data-theme="dark"] body {
+  background: var(--pwa-bg);
+  color: var(--pwa-text);
+}
+
+.pwa-message {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 9999;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 16px;
+  border: 1px solid var(--pwa-border);
+  border-radius: 18px;
+  background: var(--pwa-card-bg);
+  color: var(--pwa-text);
+  box-shadow: var(--pwa-shadow);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.pwa-message__title {
+  margin-bottom: 6px;
+  font-size: 16px;
+  font-weight: 750;
+}
+
+.pwa-message__text {
+  margin-bottom: 14px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.pwa-message__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.pwa-button {
+  min-height: 42px;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 15px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pwa-button--primary {
+  background: var(--pwa-primary);
+  color: var(--pwa-primary-text);
+}
+
+.pwa-button--ghost {
+  background: transparent;
+  color: inherit;
+}
+
+.pwa-settings-card {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--pwa-border);
+  border-radius: 18px;
+  background: var(--pwa-card-bg);
+  color: var(--pwa-text);
+}
+
+.pwa-theme-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

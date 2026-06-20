@@ -1,0 +1,18 @@
+<!-- Valgfritt eksempel: kan legges inn på eksisterende Innstillinger-side/flis -->
+<section class="pwa-settings-card" aria-labelledby="pwa-settings-title">
+  <h2 id="pwa-settings-title">Innstillinger</h2>
+
+  <div>
+    <h3>Utseende</h3>
+    <div class="pwa-theme-buttons" role="group" aria-label="Velg utseende">
+      <button type="button" class="pwa-button pwa-button--ghost" onclick="window.AppShell?.setTheme('light')">Lys</button>
+      <button type="button" class="pwa-button pwa-button--ghost" onclick="window.AppShell?.setTheme('dark')">Mørk</button>
+      <button type="button" class="pwa-button pwa-button--primary" onclick="window.AppShell?.setTheme('auto')">Auto</button>
+    </div>
+  </div>
+
+  <div>
+    <h3>Nytt i siste versjon</h3>
+    <p>Forbedret installasjon, oppdateringsvarsel, ikonstøtte og mørkemodus.</p>
+  </div>
+</section>
