@@ -6,25 +6,50 @@
     <title>Imposter - Stor Utgave</title>
     <style>
         :root {
-            --primary: #ff4757;
-            --background: #2f3542;
-            --surface: #57606f;
-            --text: #f1f2f6;
-            --success: #2ed573;
+            --primary: #ff2e63;
+            --primary-dark: #c9184a;
+            --secondary: #171a2f;
+            --accent: #00f5d4;
+            --accent-dark: #00bfa6;
+            --background: #090a14;
+            --surface: rgba(23, 26, 47, 0.92);
+            --surface-strong: #242849;
+            --text: #ffffff;
+            --text-muted: #c7d2fe;
+            --success: var(--accent);
+            --warning: #ffd166;
         }
 
+        * { box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--background);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background:
+                radial-gradient(circle at 20% 15%, rgba(255, 46, 99, 0.35), transparent 30%),
+                radial-gradient(circle at 80% 10%, rgba(0, 245, 212, 0.28), transparent 28%),
+                linear-gradient(160deg, #090a14 0%, #171a2f 52%, #2b193d 100%);
             color: var(--text);
             margin: 0;
-            padding: 20px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             text-align: center;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 34px 34px;
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent 75%);
         }
 
         .screen {
@@ -32,53 +57,95 @@
             width: 100%;
             max-width: 450px;
             background: var(--surface);
-            padding: 30px 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            box-sizing: border-box;
+            padding: 34px 22px;
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            box-shadow: 0 28px 70px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.12);
+            backdrop-filter: blur(18px);
+            position: relative;
+            z-index: 1;
         }
 
         .screen.active {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 22px;
+            animation: popIn 0.35s ease-out;
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: translateY(18px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         h1 {
             margin-top: 0;
-            color: var(--primary);
-            font-size: 2.5em;
+            margin-bottom: 4px;
+            color: var(--text);
+            font-size: clamp(2.8rem, 14vw, 4.6rem);
+            line-height: 0.95;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 24px rgba(255, 46, 99, 0.75);
         }
 
+        h1::before {
+            content: "🎭";
+            display: block;
+            width: 84px;
+            height: 84px;
+            margin: 0 auto 16px;
+            border-radius: 26px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            box-shadow: 0 18px 40px rgba(255, 46, 99, 0.35);
+            font-size: 2.8rem;
+            line-height: 84px;
+            letter-spacing: 0;
+        }
+
+        h2, h3, p, label { margin: 0; }
+        p, label { color: var(--text-muted); font-weight: 600; }
+
         input {
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
+            padding: 16px 18px;
+            border: 2px solid rgba(199, 210, 254, 0.22);
+            border-radius: 16px;
             font-size: 1.1em;
             width: 100%;
-            box-sizing: border-box;
-            background: #dfe4ea;
-            color: #2f3542;
+            background: rgba(255, 255, 255, 0.96);
+            color: var(--secondary);
+            margin-top: 10px;
             margin-bottom: 10px;
+            box-shadow: inset 0 2px 6px rgba(9,10,20,0.12);
+        }
+
+        input:focus {
+            outline: 3px solid rgba(0, 245, 212, 0.4);
+            border-color: var(--accent);
         }
 
         button {
-            padding: 15px 20px;
-            font-size: 1.2em;
+            padding: 17px 22px;
+            font-size: 1.15em;
             border: none;
-            border-radius: 8px;
-            background-color: var(--primary);
+            border-radius: 18px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             cursor: pointer;
-            font-weight: bold;
-            transition: transform 0.1s, opacity 0.2s;
+            font-weight: 900;
+            letter-spacing: 0.3px;
+            transition: transform 0.12s ease, box-shadow 0.2s ease, filter 0.2s ease;
             width: 100%;
+            box-shadow: 0 14px 28px rgba(255, 46, 99, 0.32);
         }
 
-        button:active { transform: scale(0.98); }
-        button.alt { background-color: var(--success); }
+        button:hover { filter: brightness(1.08); }
+        button:active { transform: scale(0.97); }
+        button.alt {
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: #061018;
+            box-shadow: 0 14px 28px rgba(0, 245, 212, 0.22);
+        }
 
         #nameInputsContainer {
             display: flex;
@@ -86,17 +153,24 @@
             gap: 10px;
             max-height: 40vh;
             overflow-y: auto;
+            padding-right: 4px;
         }
 
         .secret-box {
-            background: var(--background);
-            padding: 20px;
-            border-radius: 10px;
-            border: 2px dashed var(--text);
+            background: linear-gradient(145deg, rgba(9, 10, 20, 0.96), rgba(36, 40, 73, 0.96));
+            padding: 24px;
+            border-radius: 22px;
+            border: 2px dashed var(--accent);
+            box-shadow: inset 0 0 30px rgba(0, 245, 212, 0.08);
         }
-        
+
         .secret-word { font-size: 2.2em; color: var(--success); font-weight: bold; text-transform: uppercase; }
         .imposter-word { font-size: 2.5em; color: var(--primary); font-weight: bold; text-transform: uppercase; }
+
+        @media (max-width: 420px) {
+            body { padding: 14px; }
+            .screen { padding: 28px 18px; border-radius: 24px; }
+        }
     </style>
 </head>
 <body>
