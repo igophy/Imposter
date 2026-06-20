@@ -1,28 +1,27 @@
-/* pwa.css
- * Generell styling for PWA-meldinger, installasjon, oppdatering og enkel mørkemodus.
- * Kan legges ved siden av index.html og lenkes fra <head>.
- */
-
 :root {
   color-scheme: light;
-  --pwa-bg: #ffffff;
-  --pwa-text: #111827;
-  --pwa-card-bg: #ffffff;
-  --pwa-border: rgba(17, 24, 39, 0.12);
-  --pwa-shadow: 0 12px 40px rgba(17, 24, 39, 0.18);
-  --pwa-primary: #111827;
-  --pwa-primary-text: #ffffff;
+  --pwa-bg: #faf9f5;
+  --pwa-text: #141413;
+  --pwa-muted: #68655d;
+  --pwa-card-bg: #fffdf8;
+  --pwa-border: rgba(20, 20, 19, 0.13);
+  --pwa-shadow: 0 16px 44px rgba(20, 20, 19, 0.13);
+  --pwa-primary: #d97757;
+  --pwa-primary-text: #fffdf8;
+  --pwa-heading-font: "Poppins", Arial, sans-serif;
+  --pwa-body-font: "Lora", Georgia, serif;
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --pwa-bg: #111827;
-  --pwa-text: #f9fafb;
-  --pwa-card-bg: #1f2937;
-  --pwa-border: rgba(249, 250, 251, 0.14);
-  --pwa-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
-  --pwa-primary: #f9fafb;
-  --pwa-primary-text: #111827;
+  --pwa-bg: #141413;
+  --pwa-text: #faf9f5;
+  --pwa-muted: #d6d2c6;
+  --pwa-card-bg: #1f1e1b;
+  --pwa-border: rgba(250, 249, 245, 0.14);
+  --pwa-shadow: 0 16px 44px rgba(0, 0, 0, 0.34);
+  --pwa-primary: #d97757;
+  --pwa-primary-text: #fffdf8;
 }
 
 html[data-theme="dark"] body {
@@ -40,23 +39,25 @@ html[data-theme="dark"] body {
   margin: 0 auto;
   padding: 16px;
   border: 1px solid var(--pwa-border);
-  border-radius: 18px;
+  border-radius: 20px;
   background: var(--pwa-card-bg);
   color: var(--pwa-text);
   box-shadow: var(--pwa-shadow);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--pwa-body-font);
 }
 
 .pwa-message__title {
   margin-bottom: 6px;
+  font-family: var(--pwa-heading-font);
   font-size: 16px;
-  font-weight: 750;
+  font-weight: 800;
 }
 
 .pwa-message__text {
   margin-bottom: 14px;
+  color: var(--pwa-muted);
   font-size: 14px;
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
 .pwa-message__actions {
@@ -71,8 +72,8 @@ html[data-theme="dark"] body {
   border: 0;
   border-radius: 999px;
   padding: 10px 15px;
-  font: inherit;
-  font-weight: 700;
+  font-family: var(--pwa-heading-font);
+  font-weight: 800;
   cursor: pointer;
 }
 
@@ -83,7 +84,7 @@ html[data-theme="dark"] body {
 
 .pwa-button--ghost {
   background: transparent;
-  color: inherit;
+  color: var(--pwa-text);
 }
 
 .pwa-settings-card {
@@ -91,7 +92,7 @@ html[data-theme="dark"] body {
   gap: 12px;
   padding: 16px;
   border: 1px solid var(--pwa-border);
-  border-radius: 18px;
+  border-radius: 20px;
   background: var(--pwa-card-bg);
   color: var(--pwa-text);
 }
