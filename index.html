@@ -7,10 +7,13 @@
     <style>
         :root {
             --primary: #ff4757;
-            --background: #2f3542;
-            --surface: #57606f;
-            --text: #f1f2f6;
-            --success: #2ed573;
+            --secondary: #2f3542;
+            --accent: #2ed573;
+            --background: #1e2532;
+            --surface: #3a4354;
+            --text: #f8fafc;
+            --text-muted: #cbd5e1;
+            --success: var(--accent);
         }
 
         body {
@@ -59,8 +62,8 @@
             font-size: 1.1em;
             width: 100%;
             box-sizing: border-box;
-            background: #dfe4ea;
-            color: #2f3542;
+            background: #f1f5f9;
+            color: var(--secondary);
             margin-bottom: 10px;
         }
 
@@ -92,7 +95,7 @@
             background: var(--background);
             padding: 20px;
             border-radius: 10px;
-            border: 2px dashed var(--text);
+            border: 2px dashed var(--text-muted);
         }
         
         .secret-word { font-size: 2.2em; color: var(--success); font-weight: bold; text-transform: uppercase; }
