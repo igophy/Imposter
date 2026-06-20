@@ -6,36 +6,39 @@
     <title>Imposter - Stor Utgave</title>
     <style>
         :root {
-            --primary: #ff4757;
-            --primary-dark: #e63f4e;
-            --secondary: #2f3542;
-            --accent: #2ed573;
-            --accent-dark: #25b864;
-            --background: #1e2532;
-            --surface: rgba(58, 67, 84, 0.88);
-            --surface-strong: #3a4354;
-            --text: #f8fafc;
-            --text-muted: #cbd5e1;
-            --input-bg: #f8fafc;
-            --focus: rgba(46, 213, 115, 0.42);
-            --success: var(--accent);
-            --radius-lg: 28px;
-            --radius-md: 16px;
-            --shadow-card: 0 24px 70px rgba(0, 0, 0, 0.38);
-            --shadow-button: 0 12px 28px rgba(255, 71, 87, 0.32);
+            --primary: #38bdf8;
+            --primary-dark: #0284c7;
+            --secondary: #334155;
+            --accent: #7dd3fc;
+            --accent-dark: #0284c7;
+            --background: #f8fafc;
+            --surface: rgba(255, 255, 255, 0.72);
+            --surface-strong: rgba(255, 255, 255, 0.92);
+            --text: #334155;
+            --text-muted: #64748b;
+            --input-bg: rgba(248, 250, 252, 0.92);
+            --focus: rgba(56, 189, 248, 0.32);
+            --success: #0284c7;
+            --radius-lg: 32px;
+            --radius-md: 22px;
+            --radius-pill: 999px;
+            --shadow-card: 0 30px 80px -24px rgba(2, 132, 199, 0.36), 0 10px 25px -5px rgba(56, 189, 248, 0.15);
+            --shadow-button: 0 18px 34px -16px rgba(56, 189, 248, 0.72);
+            --shadow-soft: 0 18px 45px -22px rgba(51, 65, 85, 0.28);
         }
 
         * { box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-family: Inter, ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             background:
-                radial-gradient(circle at top left, rgba(255, 71, 87, 0.26), transparent 34rem),
-                radial-gradient(circle at bottom right, rgba(46, 213, 115, 0.22), transparent 30rem),
-                linear-gradient(145deg, #172031 0%, var(--background) 52%, #111827 100%);
+                radial-gradient(circle at 14% 14%, rgba(125, 211, 252, 0.46), transparent 24rem),
+                radial-gradient(circle at 88% 20%, rgba(186, 230, 253, 0.72), transparent 22rem),
+                radial-gradient(circle at 50% 96%, rgba(224, 242, 254, 0.9), transparent 26rem),
+                linear-gradient(160deg, #ffffff 0%, var(--background) 56%, #eef8ff 100%);
             color: var(--text);
             margin: 0;
-            padding: 24px;
+            padding: clamp(24px, 6vw, 48px);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -45,145 +48,187 @@
             overflow-x: hidden;
         }
 
-        body::before {
+        body::before,
+        body::after {
             content: "";
             position: fixed;
-            inset: 18px;
             pointer-events: none;
-            border: 1px solid rgba(248, 250, 252, 0.08);
-            border-radius: 32px;
+            z-index: -1;
+            filter: blur(1px);
+        }
+
+        body::before {
+            width: 210px;
+            height: 78px;
+            top: 8%;
+            left: 7%;
+            border-radius: var(--radius-pill);
+            background: rgba(255, 255, 255, 0.72);
+            box-shadow:
+                58px -18px 0 12px rgba(255, 255, 255, 0.62),
+                116px 12px 0 4px rgba(255, 255, 255, 0.5),
+                0 26px 60px rgba(56, 189, 248, 0.12);
+        }
+
+        body::after {
+            width: 260px;
+            height: 92px;
+            right: 6%;
+            bottom: 9%;
+            border-radius: var(--radius-pill);
+            background: rgba(255, 255, 255, 0.68);
+            box-shadow:
+                -70px -20px 0 10px rgba(255, 255, 255, 0.54),
+                -132px 16px 0 2px rgba(255, 255, 255, 0.48),
+                0 30px 70px rgba(2, 132, 199, 0.12);
         }
 
         .screen {
             display: none;
-            width: min(100%, 460px);
+            width: min(100%, 480px);
             background: var(--surface);
-            padding: 34px 24px 26px;
-            border: 1px solid rgba(248, 250, 252, 0.14);
+            padding: clamp(34px, 8vw, 52px) clamp(24px, 6vw, 38px) clamp(28px, 7vw, 42px);
+            border: 1px solid rgba(255, 255, 255, 0.78);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-card);
-            backdrop-filter: blur(18px);
+            backdrop-filter: blur(16px) saturate(145%);
+            -webkit-backdrop-filter: blur(16px) saturate(145%);
         }
 
         .screen.active {
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            animation: screenIn 0.28s ease-out;
+            gap: 24px;
+            animation: screenIn 0.32s ease-out;
         }
 
         @keyframes screenIn {
-            from { opacity: 0; transform: translateY(14px) scale(0.98); }
+            from { opacity: 0; transform: translateY(18px) scale(0.98); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         h1, h2, h3, p { margin: 0; }
 
         h1 {
-            color: var(--primary);
-            font-size: clamp(2.4rem, 11vw, 3.8rem);
-            line-height: 0.95;
+            color: var(--primary-dark);
+            font-size: clamp(2.5rem, 11vw, 4rem);
+            line-height: 0.98;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
-            text-shadow: 0 8px 30px rgba(255, 71, 87, 0.35);
+            letter-spacing: 0.06em;
+            text-shadow: 0 12px 32px rgba(56, 189, 248, 0.24);
         }
 
         h2 {
-            font-size: clamp(1.7rem, 7vw, 2.15rem);
-            line-height: 1.05;
-            letter-spacing: -0.03em;
+            color: var(--text);
+            font-size: clamp(1.8rem, 7vw, 2.35rem);
+            line-height: 1.08;
+            letter-spacing: -0.04em;
         }
 
         h3 {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            letter-spacing: 0.08em;
+            color: var(--primary-dark);
+            font-size: 0.92rem;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
         }
 
         p, label {
             color: var(--text-muted);
-            font-size: 1.03rem;
-            line-height: 1.5;
+            font-size: 1.05rem;
+            line-height: 1.6;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             text-align: left;
-            font-weight: 700;
+            font-weight: 800;
         }
 
         input {
             width: 100%;
-            min-height: 52px;
-            padding: 15px 16px;
-            border: 2px solid transparent;
-            border-radius: var(--radius-md);
+            min-height: 58px;
+            padding: 17px 20px;
+            border: 0;
+            border-radius: var(--radius-pill);
             background: var(--input-bg);
-            color: var(--secondary);
+            color: var(--text);
             font-size: 1.08rem;
             font-weight: 700;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86), var(--shadow-soft);
         }
 
         input:focus-visible,
         button:focus-visible {
             outline: 4px solid var(--focus);
-            outline-offset: 3px;
+            outline-offset: 4px;
         }
 
         button {
             width: 100%;
-            min-height: 56px;
-            padding: 15px 20px;
+            min-height: 60px;
+            padding: 17px 24px;
             border: 0;
-            border-radius: var(--radius-md);
+            border-radius: var(--radius-pill);
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             cursor: pointer;
             font-size: 1.08rem;
-            font-weight: 800;
+            font-weight: 850;
             letter-spacing: 0.01em;
             box-shadow: var(--shadow-button);
-            transition: transform 0.14s ease, filter 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.16s ease, box-shadow 0.2s ease, background 0.2s ease;
         }
 
-        button:hover { filter: brightness(1.06); }
-        button:active { transform: scale(0.98); }
+        button:hover {
+            background: linear-gradient(135deg, #0ea5e9, var(--primary-dark));
+            box-shadow: 0 22px 42px -16px rgba(2, 132, 199, 0.62);
+            transform: translateY(-1px);
+        }
+
+        button:active { transform: translateY(1px) scale(0.99); }
+
         button.alt {
-            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-            box-shadow: 0 12px 28px rgba(46, 213, 115, 0.26);
+            background: rgba(255, 255, 255, 0.84);
+            color: var(--primary-dark);
+            box-shadow: var(--shadow-soft);
+        }
+
+        button.alt:hover {
+            background: rgba(224, 242, 254, 0.96);
+            box-shadow: 0 18px 38px -20px rgba(2, 132, 199, 0.42);
         }
 
         #nameInputsContainer {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            max-height: 42vh;
+            gap: 16px;
+            max-height: 44vh;
             overflow-y: auto;
-            padding-right: 4px;
+            padding: 4px 6px 6px;
         }
 
         .secret-box {
-            background: rgba(30, 37, 50, 0.72);
-            padding: 22px;
-            border-radius: 22px;
-            border: 1px dashed rgba(203, 213, 225, 0.55);
-            box-shadow: inset 0 1px 0 rgba(248, 250, 252, 0.06);
+            background: rgba(255, 255, 255, 0.68);
+            padding: 28px;
+            border-radius: 28px;
+            border: 1px solid rgba(186, 230, 253, 0.7);
+            box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
         .secret-word,
         .imposter-word {
             display: block;
-            margin-top: 8px;
+            margin-top: 10px;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 0.06em;
         }
 
-        .secret-word { font-size: clamp(2.2rem, 11vw, 3.4rem); color: var(--success); }
-        .imposter-word { font-size: clamp(2.5rem, 12vw, 3.8rem); color: var(--primary); }
+        .secret-word { font-size: clamp(2.2rem, 11vw, 3.5rem); color: var(--success); }
+        .imposter-word { font-size: clamp(2.5rem, 12vw, 3.8rem); color: var(--primary-dark); }
 
         @media (max-width: 420px) {
             body { padding: 16px; }
@@ -5496,7 +5541,7 @@ const wordBank = [
                 container.innerHTML = `
                     <p>Du er...</p>
                     <div class="imposter-word">IMPOSTER</div>
-                    <p style="margin-top:15px;"><strong>Hint til ordet:</strong><br>${currentSecret.hint}</p>
+                    <p style="margin-top:18px;"><strong>Hint til ordet:</strong><br>${currentSecret.hint}</p>
                 `;
             } else {
                 container.innerHTML = `
