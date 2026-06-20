@@ -1,16 +1,16 @@
 /* pwa-app-shell.js
- * Drop-in appskall for installasjon, iOS-veiledning, oppdateringsvarsel og tema.
- * Legg inn med: <script src="./pwa-app-shell.js?v=2026.06.20-1" defer></script>
+ * Appskall for installasjon, iOS-veiledning, oppdateringsvarsel og tema.
  */
 
 (() => {
-  const APP_VERSION = "2026.06.20-1";
+  const APP_VERSION = "2026.06.21-3";
   const SW_PATH = "./sw.js";
 
   const STORAGE_KEYS = {
     installDismissed: "app_install_prompt_dismissed",
     updateDismissed: "app_update_prompt_dismissed_version",
-    theme: "app_theme"
+    theme: "app_theme",
+    completedRounds: "imposter_completed_rounds"
   };
 
   const isStandalone =
@@ -47,22 +47,15 @@
 
     document.body.appendChild(box);
 
-    const primary = box.querySelector("[data-primary]");
-    const secondary = box.querySelector("[data-secondary]");
+    box.querySelector("[data-primary]")?.addEventListener("click", () => {
+      if (onPrimary) onPrimary();
+      box.remove();
+    });
 
-    if (primary) {
-      primary.addEventListener("click", () => {
-        if (onPrimary) onPrimary();
-        box.remove();
-      });
-    }
-
-    if (secondary) {
-      secondary.addEventListener("click", () => {
-        if (onSecondary) onSecondary();
-        box.remove();
-      });
-    }
+    box.querySelector("[data-secondary]")?.addEventListener("click", () => {
+      if (onSecondary) onSecondary();
+      box.remove();
+    });
   }
 
   function getThemeSetting() {
@@ -73,11 +66,7 @@
   function applyTheme() {
     const savedTheme = getThemeSetting();
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-    const activeTheme =
-      savedTheme === "auto"
-        ? prefersDark ? "dark" : "light"
-        : savedTheme;
+    const activeTheme = savedTheme === "auto" ? prefersDark ? "dark" : "light" : savedTheme;
 
     document.documentElement.dataset.theme = activeTheme;
     document.documentElement.dataset.themeSetting = savedTheme;
@@ -92,11 +81,9 @@
 
   applyTheme();
 
-  window
-    .matchMedia("(prefers-color-scheme: dark)")
-    .addEventListener("change", () => {
-      if (getThemeSetting() === "auto") applyTheme();
-    });
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (getThemeSetting() === "auto") applyTheme();
+  });
 
   window.AppShell = window.AppShell || {};
   window.AppShell.version = APP_VERSION;
@@ -106,46 +93,65 @@
 
   let deferredInstallPrompt = null;
 
+  function hasPlayedRound() {
+    return Number(localStorage.getItem(STORAGE_KEYS.completedRounds) || "0") >= 1;
+  }
+
+  function canShowInstallPrompt() {
+    if (isStandalone) return false;
+    if (localStorage.getItem(STORAGE_KEYS.installDismissed) === "true") return false;
+    return hasPlayedRound();
+  }
+
+  function showInstallPrompt() {
+    if (!canShowInstallPrompt()) return;
+
+    if (deferredInstallPrompt) {
+      createAppMessage({
+        id: "app-install-message",
+        title: "Spille igjen senere?",
+        text: "Legg Imposter til på hjemskjermen for raskere tilgang neste gang.",
+        primaryText: "Installer",
+        secondaryText: "Ikke nå",
+        onPrimary: async () => {
+          if (!deferredInstallPrompt) return;
+          deferredInstallPrompt.prompt();
+          await deferredInstallPrompt.userChoice;
+          deferredInstallPrompt = null;
+        },
+        onSecondary: () => {
+          localStorage.setItem(STORAGE_KEYS.installDismissed, "true");
+        }
+      });
+      return;
+    }
+
+    if (isIOS && isSafari) {
+      createAppMessage({
+        id: "ios-install-message",
+        title: "Spille igjen senere?",
+        text: "På iPhone kan du trykke Del-knappen og velge «Legg til på Hjem-skjerm».",
+        primaryText: "OK",
+        secondaryText: "Ikke vis igjen",
+        onSecondary: () => {
+          localStorage.setItem(STORAGE_KEYS.installDismissed, "true");
+        }
+      });
+    }
+  }
+
   window.addEventListener("beforeinstallprompt", event => {
     event.preventDefault();
     deferredInstallPrompt = event;
+    showInstallPrompt();
+  });
 
-    if (isStandalone) return;
-    if (localStorage.getItem(STORAGE_KEYS.installDismissed) === "true") return;
-
-    createAppMessage({
-      id: "app-install-message",
-      title: "Installer appen",
-      text: "Du kan legge appen til på hjemskjermen for raskere tilgang.",
-      primaryText: "Installer",
-      secondaryText: "Ikke nå",
-      onPrimary: async () => {
-        if (!deferredInstallPrompt) return;
-        deferredInstallPrompt.prompt();
-        await deferredInstallPrompt.userChoice;
-        deferredInstallPrompt = null;
-      },
-      onSecondary: () => {
-        localStorage.setItem(STORAGE_KEYS.installDismissed, "true");
-      }
-    });
+  window.addEventListener("imposter:round-completed", () => {
+    setTimeout(showInstallPrompt, 1200);
   });
 
   window.addEventListener("load", () => {
-    if (isStandalone) return;
-    if (!isIOS || !isSafari) return;
-    if (localStorage.getItem(STORAGE_KEYS.installDismissed) === "true") return;
-
-    createAppMessage({
-      id: "ios-install-message",
-      title: "Legg til på Hjem-skjerm",
-      text: "På iPhone kan du installere appen ved å trykke Del-knappen og velge «Legg til på Hjem-skjerm».",
-      primaryText: "OK",
-      secondaryText: "Ikke vis igjen",
-      onSecondary: () => {
-        localStorage.setItem(STORAGE_KEYS.installDismissed, "true");
-      }
-    });
+    setTimeout(showInstallPrompt, 900);
   });
 
   if ("serviceWorker" in navigator) {
