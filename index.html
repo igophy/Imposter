@@ -12,8 +12,8 @@
   <link rel="apple-touch-icon" href="./icon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./pwa.css?v=2026.06.21-2">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./pwa.css?v=2026.06.21-3">
   <style>
     :root {
       --dark: #141413;
@@ -23,68 +23,63 @@
       --orange: #d97757;
       --blue: #6a9bcc;
       --green: #788c5d;
-
       --bg: var(--light);
       --paper: #fffdf8;
       --paper-soft: #f3f0e8;
-      --panel: rgba(255, 253, 248, .92);
+      --panel: rgba(255, 253, 248, .94);
       --text: var(--dark);
       --muted: #68655d;
       --primary: var(--orange);
       --primary-dark: #bf6247;
-      --success: var(--green);
-      --warning: var(--blue);
-      --border: rgba(20, 20, 19, .13);
+      --safe: var(--green);
+      --info: var(--blue);
+      --border: rgba(20, 20, 19, .11);
       --shadow: 0 22px 70px rgba(20, 20, 19, .10);
       --heading-font: "Poppins", Arial, sans-serif;
-      --body-font: "Lora", Georgia, serif;
+      --card-font: "Lora", Georgia, serif;
     }
 
     :root[data-theme="dark"] {
       --bg: var(--dark);
       --paper: #1f1e1b;
       --paper-soft: #2a2925;
-      --panel: rgba(31, 30, 27, .94);
+      --panel: rgba(31, 30, 27, .95);
       --text: var(--light);
       --muted: #d6d2c6;
       --primary: #d97757;
       --primary-dark: #e99275;
-      --success: #98aa7d;
-      --warning: #8cb3d9;
-      --border: rgba(250, 249, 245, .14);
+      --safe: #98aa7d;
+      --info: #8cb3d9;
+      --border: rgba(250, 249, 245, .12);
       --shadow: 0 22px 70px rgba(0, 0, 0, .28);
     }
 
     * { box-sizing: border-box; }
-
     html, body { min-height: 100%; }
 
     body {
       margin: 0;
-      font-family: var(--body-font);
+      font-family: var(--heading-font);
       background:
-        radial-gradient(circle at 18% 10%, rgba(217, 119, 87, .18), transparent 28rem),
-        radial-gradient(circle at 86% 86%, rgba(106, 155, 204, .14), transparent 25rem),
+        radial-gradient(circle at 18% 10%, rgba(217, 119, 87, .16), transparent 28rem),
+        radial-gradient(circle at 86% 86%, rgba(106, 155, 204, .13), transparent 25rem),
         linear-gradient(135deg, var(--bg), var(--paper-soft));
       color: var(--text);
       display: grid;
       place-items: center;
       padding: max(22px, env(safe-area-inset-top)) 16px max(22px, env(safe-area-inset-bottom));
-      letter-spacing: .005em;
     }
 
-    main {
-      width: min(100%, 500px);
-    }
+    main { width: min(100%, 500px); }
 
     .screen {
       display: none;
       background: var(--panel);
-      border: 1px solid var(--border);
       border-radius: 30px;
       box-shadow: var(--shadow);
       padding: clamp(22px, 5vw, 32px);
-      min-height: 440px;
+      min-height: min(680px, calc(100vh - 44px));
+      border: 1px solid var(--border);
       backdrop-filter: blur(14px);
     }
 
@@ -92,12 +87,22 @@
       display: flex;
       flex-direction: column;
       gap: 20px;
-      animation: rise .18s ease-out;
+      animation: fadeIn .18s ease-out;
     }
 
-    @keyframes rise {
-      from { transform: translateY(8px); opacity: .74; }
-      to { transform: translateY(0); opacity: 1; }
+    .screen.imposter-mode {
+      background: #141413;
+      color: #faf9f5;
+      border-color: rgba(217, 119, 87, .35);
+    }
+
+    .screen.imposter-mode p,
+    .screen.imposter-mode .small,
+    .screen.imposter-mode .badge { color: #e8e6dc; }
+
+    @keyframes fadeIn {
+      from { opacity: .68; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .topline {
@@ -105,7 +110,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .badge {
@@ -115,23 +120,17 @@
       padding: 8px 12px;
       border-radius: 999px;
       background: rgba(232, 230, 220, .72);
-      border: 1px solid var(--border);
       color: var(--muted);
-      font-family: var(--heading-font);
       font-size: .78rem;
       font-weight: 700;
       letter-spacing: .01em;
     }
 
-    :root[data-theme="dark"] .badge {
-      background: rgba(250, 249, 245, .07);
-    }
+    :root[data-theme="dark"] .badge { background: rgba(250, 249, 245, .07); }
 
     h1, h2, h3, p { margin: 0; }
 
-    h1, h2, h3, button, input, select, .badge {
-      font-family: var(--heading-font);
-    }
+    h1, h2, h3, button, input, select, .badge, label { font-family: var(--heading-font); }
 
     h1 {
       color: var(--text);
@@ -141,9 +140,7 @@
       text-transform: uppercase;
     }
 
-    h1::first-letter {
-      color: var(--primary);
-    }
+    h1::first-letter { color: var(--primary); }
 
     h2 {
       font-size: clamp(1.65rem, 7vw, 2.25rem);
@@ -151,15 +148,11 @@
       letter-spacing: -.045em;
     }
 
-    h3 {
-      color: var(--muted);
-      font-size: .96rem;
-      letter-spacing: -.01em;
-    }
+    h3 { color: var(--muted); font-size: .96rem; letter-spacing: -.01em; }
 
     p {
       color: var(--muted);
-      line-height: 1.62;
+      line-height: 1.55;
       font-size: 1rem;
     }
 
@@ -169,73 +162,53 @@
       display: grid;
       gap: 9px;
       color: var(--muted);
-      font-family: var(--heading-font);
       font-size: .9rem;
       font-weight: 700;
       text-align: left;
     }
 
-    input, select, button {
-      font: inherit;
-      width: 100%;
-    }
+    input, select, button { font: inherit; width: 100%; }
 
     input, select {
-      border: 1px solid var(--border);
-      background: rgba(250, 249, 245, .76);
+      border: 0;
+      background: rgba(232, 230, 220, .58);
       color: var(--text);
-      border-radius: 18px;
+      border-radius: 16px;
       padding: 15px 16px;
       outline: none;
     }
 
     :root[data-theme="dark"] input,
-    :root[data-theme="dark"] select {
-      background: rgba(250, 249, 245, .06);
-    }
+    :root[data-theme="dark"] select { background: rgba(250, 249, 245, .07); }
 
-    input:focus, select:focus {
-      border-color: rgba(217, 119, 87, .75);
-      box-shadow: 0 0 0 4px rgba(217, 119, 87, .14);
-    }
+    input:focus, select:focus { box-shadow: 0 0 0 4px rgba(217, 119, 87, .16); }
 
     button {
       min-height: 54px;
       border: 0;
-      border-radius: 18px;
+      border-radius: 16px;
       padding: 14px 17px;
       background: var(--primary);
       color: #fffdf8;
       font-weight: 800;
       cursor: pointer;
-      box-shadow: 0 14px 28px rgba(217, 119, 87, .20);
-      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+      box-shadow: 0 14px 28px rgba(217, 119, 87, .18);
+      transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
+      touch-action: manipulation;
     }
 
     button:hover { background: var(--primary-dark); }
     button:active { transform: translateY(1px) scale(.99); }
-
-    button.secondary {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border);
-      box-shadow: none;
-    }
-
-    button.success {
-      background: var(--success);
-      box-shadow: 0 14px 28px rgba(120, 140, 93, .18);
-    }
-
-    button.warning {
-      background: var(--warning);
-      color: var(--dark);
-      box-shadow: 0 14px 28px rgba(106, 155, 204, .14);
-    }
+    button.secondary { background: rgba(232, 230, 220, .65); color: var(--text); box-shadow: none; }
+    button.success { background: var(--safe); box-shadow: 0 14px 28px rgba(120, 140, 93, .16); }
+    button.info { background: var(--info); color: var(--dark); box-shadow: 0 14px 28px rgba(106, 155, 204, .13); }
+    button.ghost { background: transparent; color: var(--text); box-shadow: none; }
 
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .stack { display: grid; gap: 13px; }
     .spacer { flex: 1; }
+    .center { text-align: center; }
+    .small { font-size: .9rem; color: var(--muted); }
 
     .names {
       display: grid;
@@ -247,19 +220,25 @@
 
     .card {
       border-radius: 24px;
-      background: rgba(232, 230, 220, .56);
-      border: 1px solid var(--border);
+      background: rgba(232, 230, 220, .48);
       padding: 20px;
     }
 
-    :root[data-theme="dark"] .card {
-      background: rgba(250, 249, 245, .06);
+    :root[data-theme="dark"] .card { background: rgba(250, 249, 245, .06); }
+
+    .display-name,
+    .secret-word,
+    .imposter-word,
+    .timer-display {
+      font-family: var(--card-font);
+      font-weight: 700;
+      letter-spacing: -.045em;
     }
 
-    .big-name {
-      color: var(--success);
-      font-size: clamp(2.35rem, 14vw, 4.55rem);
-      line-height: .9;
+    .display-name {
+      color: var(--safe);
+      font-size: clamp(2.7rem, 15vw, 5rem);
+      line-height: .92;
       word-break: break-word;
     }
 
@@ -267,41 +246,54 @@
       display: grid;
       gap: 12px;
       place-items: center;
-      min-height: 176px;
-      border: 2px dashed rgba(176, 174, 165, .9);
-      border-radius: 24px;
-      background: linear-gradient(180deg, rgba(232, 230, 220, .62), rgba(250, 249, 245, .40));
-      padding: 26px 16px;
+      min-height: 206px;
+      border-radius: 26px;
+      background: linear-gradient(180deg, rgba(232, 230, 220, .70), rgba(250, 249, 245, .48));
+      padding: 28px 16px;
       text-align: center;
     }
 
-    :root[data-theme="dark"] .secret {
-      background: rgba(250, 249, 245, .06);
-      border-color: rgba(250, 249, 245, .22);
-    }
+    :root[data-theme="dark"] .secret { background: rgba(250, 249, 245, .07); }
+    .screen.imposter-mode .secret { background: rgba(217, 119, 87, .10); }
 
     .secret-word {
-      color: var(--success);
-      font-family: var(--heading-font);
-      font-weight: 900;
-      font-size: clamp(2rem, 11vw, 4rem);
+      color: var(--safe);
+      font-size: clamp(2.2rem, 12vw, 4.4rem);
       line-height: .95;
-      letter-spacing: -.055em;
       text-transform: uppercase;
     }
 
     .imposter-word {
       color: var(--primary);
-      font-family: var(--heading-font);
-      font-weight: 900;
-      font-size: clamp(2rem, 11vw, 4rem);
-      line-height: .95;
-      letter-spacing: -.055em;
+      font-size: clamp(2.4rem, 13vw, 4.8rem);
+      line-height: .92;
       text-transform: uppercase;
     }
 
-    .small { font-size: .92rem; color: var(--muted); }
-    .center { text-align: center; }
+    .hold-button {
+      min-height: 84px;
+      border-radius: 22px;
+      font-size: 1.08rem;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    .hold-button.is-holding {
+      background: var(--safe);
+      box-shadow: 0 16px 34px rgba(120, 140, 93, .22);
+    }
+
+    .screen.imposter-mode .hold-button.is-holding {
+      background: var(--primary);
+      color: #fffdf8;
+    }
+
+    .timer-display {
+      font-size: clamp(2.3rem, 12vw, 4rem);
+      color: var(--info);
+      line-height: 1;
+    }
 
     .toast {
       position: fixed;
@@ -312,12 +304,10 @@
       max-width: 500px;
       background: var(--paper);
       color: var(--text);
-      border: 1px solid var(--border);
       border-radius: 20px;
       padding: 15px 17px;
       box-shadow: var(--shadow);
       z-index: 10000;
-      font-family: var(--heading-font);
       font-weight: 700;
     }
   </style>
@@ -331,58 +321,62 @@
       </div>
       <div class="stack center">
         <h1>Imposter</h1>
-        <p>Ett ord. Én imposter. Alle får se ordet — bortsett fra den som må late som.</p>
+        <p>Et sosialt bløffespill med ett hemmelig ord og én eller flere impostere.</p>
       </div>
 
       <div class="stack">
-        <label>
-          Antall spillere
+        <label>Antall spillere
           <input id="playerCount" type="number" min="3" max="15" value="4" inputmode="numeric">
         </label>
-        <label>
-          Kategori
+        <label>Antall impostere
+          <input id="imposterCount" type="number" min="1" max="1" value="1" inputmode="numeric">
+        </label>
+        <p class="small" id="imposterHelp">Ved flere spillere kan dere bruke flere impostere.</p>
+        <label>Kategori
           <select id="categorySelect"></select>
         </label>
       </div>
 
       <div class="spacer"></div>
-      <button type="button" onclick="goToNames()">Gå videre</button>
+      <button id="goToNamesBtn" type="button">Gå videre</button>
     </section>
 
     <section id="names" class="screen">
       <div class="topline">
         <span class="badge">👥 Spillere</span>
-        <button class="secondary" type="button" style="width:auto;min-height:40px;padding:8px 12px" onclick="showScreen('setup')">Tilbake</button>
+        <button id="backToSetupBtn" class="secondary" type="button" style="width:auto;min-height:40px;padding:8px 12px">Tilbake</button>
       </div>
       <h2>Skriv inn navn</h2>
+      <p>Navn lagres på denne telefonen, så det går raskt å spille igjen med samme gjeng.</p>
       <div id="nameInputs" class="names"></div>
       <div class="spacer"></div>
-      <button class="success" type="button" onclick="startGame()">Start spillet</button>
+      <button id="startGameBtn" class="success" type="button">Start spillet</button>
     </section>
 
-    <section id="pass" class="screen">
+    <section id="handoff" class="screen">
       <div class="topline">
         <span class="badge" id="progressBadge">1 / 4</span>
-        <span class="badge">Skjult skjerm</span>
+        <span class="badge">Ingen hemmelighet vises</span>
       </div>
       <div class="stack center">
-        <h2>Send telefonen til</h2>
-        <h1 id="passName" class="big-name">Navn</h1>
-        <p>Ingen andre må se skjermen.</p>
+        <h2>Gi telefonen til</h2>
+        <div id="handoffName" class="display-name">Navn</div>
+        <p>Kun denne personen skal trykke videre.</p>
       </div>
       <div class="spacer"></div>
-      <button type="button" onclick="showSecret()">Vis min hemmelighet</button>
+      <button id="confirmPlayerBtn" type="button">Jeg er spilleren</button>
     </section>
 
     <section id="reveal" class="screen">
       <div class="topline">
         <span class="badge">🤫 Hemmelig</span>
-        <span class="badge" id="roleBadge">Rolle</span>
+        <span class="badge" id="roleBadge">Klar</span>
       </div>
-      <div class="secret" id="secretBox"></div>
-      <p class="small center">Trykk ferdig før du sender telefonen videre.</p>
-      <div class="spacer"></div>
-      <button type="button" onclick="nextPlayer()">Ferdig – skjul skjerm</button>
+      <div class="secret" id="secretBox">
+        <p>Hold knappen nede for å se hemmeligheten.</p>
+      </div>
+      <button id="holdRevealBtn" class="hold-button" type="button">Hold for å se hemmelighet</button>
+      <p class="small center">Når du slipper, skjules hemmeligheten og telefonen går videre.</p>
     </section>
 
     <section id="play" class="screen">
@@ -392,11 +386,27 @@
       </div>
       <div class="card center stack">
         <h3>Den som starter å snakke</h3>
-        <h1 id="starterName" class="big-name">Navn</h1>
+        <div id="starterName" class="display-name">Navn</div>
       </div>
-      <p>Alle sier én setning som hinter til ordet. Imposteren må bløffe. Til slutt stemmer dere på hvem som er imposter.</p>
+      <p>Alle sier én setning som hinter til ordet. Imposteren må bløffe. Til slutt peker dere på den dere mistenker.</p>
+      <div class="card stack center">
+        <label>Valgfritt tidsur
+          <select id="timerSelect">
+            <option value="0">Uten tidsur</option>
+            <option value="60">1 minutt</option>
+            <option value="120" selected>2 minutter</option>
+            <option value="180">3 minutter</option>
+            <option value="300">5 minutter</option>
+          </select>
+        </label>
+        <div id="timerDisplay" class="timer-display">02:00</div>
+        <div class="row">
+          <button id="timerStartBtn" class="info" type="button">Start</button>
+          <button id="timerResetBtn" class="secondary" type="button">Nullstill</button>
+        </div>
+      </div>
       <div class="spacer"></div>
-      <button class="warning" type="button" onclick="showResult()">Vis fasit</button>
+      <button id="showResultBtn" type="button">Vis fasit</button>
     </section>
 
     <section id="result" class="screen">
@@ -406,16 +416,16 @@
       </div>
       <div class="stack center">
         <p>Ordet var</p>
-        <h1 id="resultWord" class="secret-word">ORD</h1>
+        <div id="resultWord" class="secret-word">ORD</div>
       </div>
       <div class="stack center">
-        <p>Imposteren var</p>
-        <h1 id="resultImposter" class="imposter-word">NAVN</h1>
+        <p>Imposter</p>
+        <div id="resultImposter" class="imposter-word">NAVN</div>
       </div>
       <div class="spacer"></div>
       <div class="row">
-        <button type="button" onclick="restartSamePlayers()">Ny runde</button>
-        <button class="secondary" type="button" onclick="resetAll()">Nytt spill</button>
+        <button id="samePlayersBtn" type="button">Samme gjeng</button>
+        <button id="newGameBtn" class="secondary" type="button">Nytt spill</button>
       </div>
     </section>
   </main>
@@ -423,33 +433,40 @@
   <script>
     const wordBank = {
       "Blandet": ["Pizza", "Kino", "Fotball", "Sykehus", "Strand", "Jul", "Taco", "Hytte", "Bursdag", "Flyplass", "Skole", "Kaffe", "Regn", "Mobil", "Bil", "Ferie", "Hund", "Katt", "Sofa", "Butikk"],
+      "Barn/familie": ["Iskrem", "Dyrehage", "Bamse", "Lego", "Fotball", "Skole", "Bursdag", "Hund", "Katt", "Sykkel", "Pannekaker", "Kino", "Tegnefilm", "Svømmehall", "Juice", "Sjokolade", "Snømann", "Jul", "Strand", "Pirat"],
       "Mat": ["Pizza", "Taco", "Sushi", "Hamburger", "Lasagne", "Pannekaker", "Vafler", "Iskrem", "Sjokolade", "Kebab", "Pasta", "Popcorn", "Brus", "Kake", "Grillmat"],
-      "Steder": ["Kino", "Skole", "Sykehus", "Flyplass", "Strand", "Fjell", "Hytte", "Butikk", "Bibliotek", "Restaurant", "Buss", "Tog", "Kontor", "Svømmehall", "Stadion"],
-      "Dyr": ["Hund", "Katt", "Løve", "Tiger", "Elefant", "Pingvin", "Delfin", "Hai", "Hest", "Kanin", "Rev", "Ulv", "Bjørn", "Ape", "Sau"],
+      "Steder og geografi": ["Norge", "Danmark", "London", "Paris", "Strand", "Fjell", "Hytte", "Flyplass", "Bibliotek", "Restaurant", "Buss", "Tog", "Kontor", "Svømmehall", "Stadion"],
+      "Popkultur": ["Superhelt", "TikTok", "YouTube", "Netflix", "Konsert", "Reality", "Podcast", "Film", "Musikk", "Kjendis", "Dataspill", "Influencer", "Karaoke", "Meme", "Festival"],
       "Ting": ["Mobil", "Nøkkel", "Sofa", "Ryggsekk", "TV", "Lader", "Sykkel", "Bok", "Klokke", "Sko", "Jakke", "Kopp", "Datamaskin", "Ball", "Kortstokk"]
     };
 
     const state = {
       players: [],
       currentIndex: 0,
-      imposterIndex: -1,
+      imposterIndexes: new Set(),
+      imposterCount: 1,
       word: "",
       category: "Blandet",
       starterIndex: 0,
-      round: Number(localStorage.getItem("imposter_round") || "1")
+      round: Number(localStorage.getItem("imposter_round") || "1"),
+      resultShown: false,
+      isGameActive: false
     };
 
     const $ = id => document.getElementById(id);
+    let wakeLock = null;
+    let isHoldingSecret = false;
+    let timerInterval = null;
+    let timerSeconds = 120;
 
     function showScreen(id) {
       document.querySelectorAll(".screen").forEach(screen => screen.classList.remove("active"));
       $(id).classList.add("active");
-      window.scrollTo({ top: 0, behavior: "instant" });
+      window.scrollTo({ top: 0, behavior: "auto" });
     }
 
     function toast(message) {
-      const old = document.querySelector(".toast");
-      if (old) old.remove();
+      document.querySelector(".toast")?.remove();
       const box = document.createElement("div");
       box.className = "toast";
       box.textContent = message;
@@ -457,19 +474,62 @@
       setTimeout(() => box.remove(), 2600);
     }
 
+    function haptic(pattern = 15) {
+      if ("vibrate" in navigator) navigator.vibrate(pattern);
+    }
+
+    async function requestWakeLock() {
+      if (!("wakeLock" in navigator)) return;
+      try {
+        wakeLock = await navigator.wakeLock.request("screen");
+      } catch {
+        wakeLock = null;
+      }
+    }
+
+    async function releaseWakeLock() {
+      if (!wakeLock) return;
+      try { await wakeLock.release(); } catch {}
+      wakeLock = null;
+    }
+
+    function getMaxImposters(playerCount) {
+      if (playerCount >= 10) return 3;
+      if (playerCount >= 7) return 2;
+      return 1;
+    }
+
+    function updateImposterLimit() {
+      const count = Math.max(3, Math.min(15, Number($("playerCount").value) || 4));
+      const max = getMaxImposters(count);
+      $("imposterCount").max = String(max);
+      if (Number($("imposterCount").value) > max) $("imposterCount").value = String(max);
+      $("imposterHelp").textContent = max === 1
+        ? "Med færre enn 7 spillere anbefales én imposter."
+        : `Med ${count} spillere kan dere bruke opptil ${max} impostere.`;
+    }
+
     function initCategories() {
-      const select = $("categorySelect");
-      select.innerHTML = Object.keys(wordBank).map(category => `<option value="${category}">${category}</option>`).join("");
+      $("categorySelect").innerHTML = Object.keys(wordBank)
+        .map(category => `<option value="${category}">${category}</option>`)
+        .join("");
     }
 
     function goToNames() {
+      updateImposterLimit();
       const count = Number($("playerCount").value);
+      const imposters = Number($("imposterCount").value);
+
       if (!Number.isInteger(count) || count < 3 || count > 15) {
         toast("Velg mellom 3 og 15 spillere.");
         return;
       }
 
-      const previous = state.players;
+      if (!Number.isInteger(imposters) || imposters < 1 || imposters >= count) {
+        toast("Velg gyldig antall impostere.");
+        return;
+      }
+
       const container = $("nameInputs");
       container.innerHTML = "";
 
@@ -478,7 +538,7 @@
         input.type = "text";
         input.autocomplete = "off";
         input.placeholder = `Spiller ${i + 1}`;
-        input.value = previous[i] || "";
+        input.value = state.players[i] || "";
         container.appendChild(input);
       }
 
@@ -486,10 +546,19 @@
       container.querySelector("input")?.focus();
     }
 
+    function pickImposters(playerCount, imposterCount) {
+      const selected = new Set();
+      while (selected.size < imposterCount) {
+        selected.add(Math.floor(Math.random() * playerCount));
+      }
+      return selected;
+    }
+
     function startGame() {
       const inputs = Array.from($("nameInputs").querySelectorAll("input"));
       const names = inputs.map((input, index) => input.value.trim() || `Spiller ${index + 1}`);
       const unique = new Set(names.map(name => name.toLowerCase()));
+      const imposterCount = Number($("imposterCount").value);
 
       if (names.length < 3) {
         toast("Du trenger minst 3 spillere.");
@@ -501,52 +570,175 @@
         return;
       }
 
+      if (imposterCount < 1 || imposterCount >= names.length) {
+        toast("Antall impostere må være lavere enn antall spillere.");
+        return;
+      }
+
+      const category = $("categorySelect").value || "Blandet";
+      const words = wordBank[category] || wordBank.Blandet;
+
       state.players = names;
-      state.category = $("categorySelect").value || "Blandet";
-      const words = wordBank[state.category] || wordBank.Blandet;
+      state.category = category;
+      state.imposterCount = imposterCount;
       state.word = words[Math.floor(Math.random() * words.length)];
-      state.imposterIndex = Math.floor(Math.random() * names.length);
+      state.imposterIndexes = pickImposters(names.length, imposterCount);
       state.starterIndex = Math.floor(Math.random() * names.length);
       state.currentIndex = 0;
+      state.resultShown = false;
+      state.isGameActive = true;
 
       localStorage.setItem("imposter_players", JSON.stringify(names));
-      localStorage.setItem("imposter_category", state.category);
+      localStorage.setItem("imposter_category", category);
+      localStorage.setItem("imposter_imposter_count", String(imposterCount));
 
-      preparePassScreen();
-      showScreen("pass");
+      requestWakeLock();
+      prepareHandoff();
+      showScreen("handoff");
+      haptic(12);
     }
 
-    function preparePassScreen() {
-      $("passName").textContent = state.players[state.currentIndex];
+    function prepareHandoff() {
+      const name = state.players[state.currentIndex];
+      $("handoffName").textContent = name;
+      $("confirmPlayerBtn").textContent = `Jeg er ${name}`;
       $("progressBadge").textContent = `${state.currentIndex + 1} / ${state.players.length}`;
+      $("reveal").classList.remove("imposter-mode");
+      $("roleBadge").textContent = "Klar";
+      $("holdRevealBtn").classList.remove("is-holding");
+      $("secretBox").innerHTML = `<p>Hold knappen nede for å se hemmeligheten.</p>`;
     }
 
-    function showSecret() {
-      const isImposter = state.currentIndex === state.imposterIndex;
-      $("roleBadge").textContent = isImposter ? "Imposter" : "Spiller";
-      $("secretBox").innerHTML = isImposter
-        ? `<p>Du er</p><div class="imposter-word">IMPOSTER</div><p>Lat som du vet ordet. Kategorien er: <strong>${state.category}</strong></p>`
-        : `<p>Ordet er</p><div class="secret-word">${state.word}</div><p>Kategori: <strong>${state.category}</strong></p>`;
+    function confirmPlayer() {
+      prepareHandoff();
       showScreen("reveal");
+    }
+
+    function showCurrentSecret() {
+      const isImposter = state.imposterIndexes.has(state.currentIndex);
+      const reveal = $("reveal");
+      const box = $("secretBox");
+      const name = state.players[state.currentIndex];
+
+      reveal.classList.toggle("imposter-mode", isImposter);
+      $("roleBadge").textContent = isImposter ? "Imposter" : "Spiller";
+
+      if (isImposter) {
+        box.innerHTML = `
+          <p>${name}, du er</p>
+          <div class="imposter-word">Imposter</div>
+          <p>Bløff deg gjennom runden. Kategorien er <strong>${state.category}</strong>.</p>
+        `;
+      } else {
+        box.innerHTML = `
+          <p>${name}, ordet er</p>
+          <div class="secret-word">${state.word}</div>
+          <p>Kategori: <strong>${state.category}</strong></p>
+        `;
+      }
+    }
+
+    function startHoldingSecret(event) {
+      event.preventDefault();
+      if (isHoldingSecret) return;
+      isHoldingSecret = true;
+      $("holdRevealBtn").classList.add("is-holding");
+      if (event.pointerId && event.currentTarget.setPointerCapture) {
+        event.currentTarget.setPointerCapture(event.pointerId);
+      }
+      showCurrentSecret();
+      haptic(18);
+    }
+
+    function stopHoldingSecret(event) {
+      event?.preventDefault?.();
+      if (!isHoldingSecret) return;
+      isHoldingSecret = false;
+      $("holdRevealBtn").classList.remove("is-holding");
+      $("secretBox").innerHTML = `<p>Skjult.</p>`;
+      $("reveal").classList.remove("imposter-mode");
+      haptic(8);
+      setTimeout(nextPlayer, 180);
     }
 
     function nextPlayer() {
       state.currentIndex += 1;
       if (state.currentIndex >= state.players.length) {
-        $("starterName").textContent = state.players[state.starterIndex];
-        $("categoryBadge").textContent = state.category;
-        showScreen("play");
+        startDiscussion();
+        return;
+      }
+      prepareHandoff();
+      showScreen("handoff");
+    }
+
+    function startDiscussion() {
+      $("starterName").textContent = state.players[state.starterIndex];
+      $("categoryBadge").textContent = state.category;
+      resetTimer();
+      showScreen("play");
+      haptic([20, 40, 20]);
+    }
+
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const rest = seconds % 60;
+      return `${String(minutes).padStart(2, "0")}:${String(rest).padStart(2, "0")}`;
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      timerSeconds = Number($("timerSelect").value) || 0;
+      $("timerDisplay").textContent = timerSeconds ? formatTime(timerSeconds) : "—";
+      $("timerStartBtn").textContent = "Start";
+    }
+
+    function toggleTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        $("timerStartBtn").textContent = "Fortsett";
         return;
       }
 
-      preparePassScreen();
-      showScreen("pass");
+      if (!timerSeconds) {
+        toast("Velg tidsur først.");
+        return;
+      }
+
+      $("timerStartBtn").textContent = "Pause";
+      timerInterval = setInterval(() => {
+        timerSeconds -= 1;
+        $("timerDisplay").textContent = formatTime(Math.max(timerSeconds, 0));
+        if (timerSeconds <= 0) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          $("timerStartBtn").textContent = "Start";
+          haptic([40, 60, 40]);
+          toast("Tiden er ute! Stem på imposteren.");
+        }
+      }, 1000);
     }
 
     function showResult() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+
       $("resultWord").textContent = state.word;
-      $("resultImposter").textContent = state.players[state.imposterIndex];
+      $("resultImposter").textContent = Array.from(state.imposterIndexes)
+        .map(index => state.players[index])
+        .join(", ");
       $("resultCategory").textContent = state.category;
+
+      if (!state.resultShown) {
+        state.resultShown = true;
+        const completed = Number(localStorage.getItem("imposter_completed_rounds") || "0") + 1;
+        localStorage.setItem("imposter_completed_rounds", String(completed));
+        window.dispatchEvent(new CustomEvent("imposter:round-completed", { detail: { completed } }));
+      }
+
+      state.isGameActive = false;
+      releaseWakeLock();
       showScreen("result");
     }
 
@@ -556,14 +748,22 @@
       $("roundBadge").textContent = `Runde ${state.round}`;
       $("playerCount").value = String(state.players.length || 4);
       $("categorySelect").value = state.category;
+      $("imposterCount").value = String(state.imposterCount || 1);
+      updateImposterLimit();
       startGame();
     }
 
     function resetAll() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      releaseWakeLock();
       state.players = [];
       state.currentIndex = 0;
+      state.isGameActive = false;
       $("playerCount").value = "4";
+      $("imposterCount").value = "1";
       $("roundBadge").textContent = "Ny runde";
+      updateImposterLimit();
       showScreen("setup");
     }
 
@@ -583,11 +783,46 @@
         $("categorySelect").value = savedCategory;
       }
 
+      const savedImposters = Number(localStorage.getItem("imposter_imposter_count") || "1");
+      $("imposterCount").value = String(savedImposters || 1);
+      updateImposterLimit();
       $("roundBadge").textContent = state.round > 1 ? `Runde ${state.round}` : "Ny runde";
+      resetTimer();
+    }
+
+    function bindEvents() {
+      $("playerCount").addEventListener("input", updateImposterLimit);
+      $("goToNamesBtn").addEventListener("click", goToNames);
+      $("backToSetupBtn").addEventListener("click", () => showScreen("setup"));
+      $("startGameBtn").addEventListener("click", startGame);
+      $("confirmPlayerBtn").addEventListener("click", confirmPlayer);
+      $("showResultBtn").addEventListener("click", showResult);
+      $("samePlayersBtn").addEventListener("click", restartSamePlayers);
+      $("newGameBtn").addEventListener("click", resetAll);
+      $("timerSelect").addEventListener("change", resetTimer);
+      $("timerStartBtn").addEventListener("click", toggleTimer);
+      $("timerResetBtn").addEventListener("click", resetTimer);
+
+      const holdButton = $("holdRevealBtn");
+      holdButton.addEventListener("pointerdown", startHoldingSecret);
+      holdButton.addEventListener("pointerup", stopHoldingSecret);
+      holdButton.addEventListener("pointercancel", stopHoldingSecret);
+      holdButton.addEventListener("lostpointercapture", stopHoldingSecret);
+      holdButton.addEventListener("keydown", event => {
+        if (event.key === " " || event.key === "Enter") startHoldingSecret(event);
+      });
+      holdButton.addEventListener("keyup", event => {
+        if (event.key === " " || event.key === "Enter") stopHoldingSecret(event);
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible" && state.isGameActive) requestWakeLock();
+      });
     }
 
     restore();
+    bindEvents();
   </script>
-  <script src="./pwa-app-shell.js?v=2026.06.21-2" defer></script>
+  <script src="./pwa-app-shell.js?v=2026.06.21-3" defer></script>
 </body>
 </html>
