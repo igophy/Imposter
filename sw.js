@@ -1,5 +1,5 @@
-const CACHE_VERSION = "2026.06.21-9";
-const CACHE_NAME = `imposter-shell-${CACHE_VERSION}`;
+const CACHE_VERSION = "2026.06.21-10";
+const CACHE_NAME = `impostor-shell-${CACHE_VERSION}`;
 
 const CORE_ASSETS = [
   "./",
