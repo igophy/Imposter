@@ -3,7 +3,8 @@
  */
 
 (() => {
-  const APP_VERSION = "2026.06.21-8";
+  const APP_VERSION = "2026.06.21-10";
+  const APP_NAME = "impostor";
   const SW_PATH = "./sw.js";
 
   const STORAGE_KEYS = {
@@ -79,14 +80,38 @@
     window.dispatchEvent(new CustomEvent("app-theme-change", { detail: { theme } }));
   }
 
-  function addVersionBadge() {
-    if (document.getElementById("appVersionBadge")) return;
+  function applyAppName() {
+    document.title = APP_NAME;
+
+    const appleTitle = document.querySelector('meta[name="apple-mobile-web-app-title"]');
+    if (appleTitle) appleTitle.setAttribute("content", APP_NAME);
 
     const setup = document.getElementById("setup");
     if (!setup) return;
 
-    const version = document.createElement("p");
-    version.id = "appVersionBadge";
+    const badges = setup.querySelectorAll(".badge");
+    if (badges[0]) badges[0].textContent = `🎭 ${APP_NAME}`;
+
+    const heading = setup.querySelector("h1");
+    if (heading) heading.textContent = APP_NAME;
+
+    const intro = setup.querySelector("p");
+    if (intro && intro.id !== "appVersionBadge") {
+      intro.textContent = "Et sosialt bløffespill med ett hemmelig ord og én eller flere impostere.";
+    }
+  }
+
+  function addVersionBadge() {
+    let version = document.getElementById("appVersionBadge");
+    const setup = document.getElementById("setup");
+    if (!setup) return;
+
+    if (!version) {
+      version = document.createElement("p");
+      version.id = "appVersionBadge";
+      setup.appendChild(version);
+    }
+
     version.textContent = `Versjon ${APP_VERSION}`;
     version.style.margin = "10px 0 0";
     version.style.textAlign = "center";
@@ -96,8 +121,6 @@
     version.style.letterSpacing = "0.01em";
     version.style.color = "var(--muted, #68655d)";
     version.style.opacity = "0.9";
-
-    setup.appendChild(version);
   }
 
   function keepRevealButtonReusable() {
@@ -150,11 +173,13 @@
 
   window.AppShell = window.AppShell || {};
   window.AppShell.version = APP_VERSION;
+  window.AppShell.name = APP_NAME;
   window.AppShell.getTheme = getThemeSetting;
   window.AppShell.setTheme = setTheme;
   window.AppShell.showMessage = createAppMessage;
 
   window.addEventListener("load", () => {
+    applyAppName();
     addVersionBadge();
     keepRevealButtonReusable();
   });
@@ -178,7 +203,7 @@
       createAppMessage({
         id: "app-install-message",
         title: "Spille igjen senere?",
-        text: "Legg Imposter til på hjemskjermen for raskere tilgang neste gang.",
+        text: "Legg impostor til på hjemskjermen for raskere tilgang neste gang.",
         primaryText: "Installer",
         secondaryText: "Ikke nå",
         onPrimary: async () => {
