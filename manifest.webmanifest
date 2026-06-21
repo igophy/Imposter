@@ -1,12 +1,12 @@
 {
-  "name": "Imposter",
-  "short_name": "Imposter",
-  "description": "Et enkelt norsk Imposter-spill for mobil og hjemskjerm.",
+  "name": "impostor",
+  "short_name": "impostor",
+  "description": "Norsk partyspill for mobil og hjemskjerm.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#faf9f5",
-  "theme_color": "#faf9f5",
+  "background_color": "#03070a",
+  "theme_color": "#03070a",
   "orientation": "portrait-primary",
   "icons": [
     {
