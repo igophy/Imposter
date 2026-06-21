@@ -3,7 +3,7 @@
  */
 
 (() => {
-  const APP_VERSION = "2026.06.21-3";
+  const APP_VERSION = "2026.06.21-5";
   const SW_PATH = "./sw.js";
 
   const STORAGE_KEYS = {
@@ -79,6 +79,32 @@
     window.dispatchEvent(new CustomEvent("app-theme-change", { detail: { theme } }));
   }
 
+  function keepRevealButtonReusable() {
+    const holdButton = document.getElementById("holdRevealBtn");
+    const nextButton = document.getElementById("nextPlayerBtn");
+    const helpText = document.getElementById("revealHelp");
+    if (!holdButton || !nextButton) return;
+
+    const restoreRevealButton = () => {
+      window.setTimeout(() => {
+        if (!document.getElementById("reveal")?.classList.contains("active")) return;
+        holdButton.hidden = false;
+        nextButton.hidden = false;
+        holdButton.textContent = "Hold for å se igjen";
+        if (helpText) {
+          helpText.textContent = "Du kan holde knappen igjen for å se hemmeligheten på nytt, eller trykke neste spiller.";
+        }
+      }, 0);
+    };
+
+    holdButton.addEventListener("pointerup", restoreRevealButton);
+    holdButton.addEventListener("pointercancel", restoreRevealButton);
+    holdButton.addEventListener("lostpointercapture", restoreRevealButton);
+    holdButton.addEventListener("keyup", event => {
+      if (event.key === " " || event.key === "Enter") restoreRevealButton();
+    });
+  }
+
   applyTheme();
 
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
@@ -90,6 +116,8 @@
   window.AppShell.getTheme = getThemeSetting;
   window.AppShell.setTheme = setTheme;
   window.AppShell.showMessage = createAppMessage;
+
+  window.addEventListener("load", keepRevealButtonReusable);
 
   let deferredInstallPrompt = null;
 
