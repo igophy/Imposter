@@ -3,7 +3,7 @@
  */
 
 (() => {
-  const APP_VERSION = "2026.06.21-6";
+  const APP_VERSION = "2026.06.21-7";
   const SW_PATH = "./sw.js";
 
   const STORAGE_KEYS = {
@@ -101,17 +101,29 @@
   }
 
   function keepRevealButtonReusable() {
+    const reveal = document.getElementById("reveal");
     const holdButton = document.getElementById("holdRevealBtn");
     const nextButton = document.getElementById("nextPlayerBtn");
     const helpText = document.getElementById("revealHelp");
-    if (!holdButton || !nextButton) return;
+    const secretBox = document.getElementById("secretBox");
+    if (!holdButton || !nextButton || !secretBox) return;
 
     const restoreRevealButton = () => {
       window.setTimeout(() => {
-        if (!document.getElementById("reveal")?.classList.contains("active")) return;
+        if (!reveal?.classList.contains("active")) return;
+
         holdButton.hidden = false;
         nextButton.hidden = false;
         holdButton.textContent = "Hold for å se igjen";
+
+        secretBox.innerHTML = `
+          <div style="display:grid;gap:10px;place-items:center;text-align:center;min-height:150px;">
+            <div style="font-family:Poppins,Arial,sans-serif;font-size:0.9rem;font-weight:800;color:var(--muted,#68655d);text-transform:uppercase;letter-spacing:.06em;">Skjult</div>
+            <div style="font-family:Poppins,Arial,sans-serif;font-size:clamp(1.45rem,7vw,2.15rem);font-weight:800;line-height:1.08;color:var(--text,#141413);">Gi telefonen videre</div>
+            <div style="font-size:0.98rem;line-height:1.45;color:var(--muted,#68655d);max-width:28ch;">Trykk «${nextButton.textContent || "Neste spiller"}» når telefonen er klar til å sendes videre.</div>
+          </div>
+        `;
+
         if (helpText) {
           helpText.textContent = "Du kan holde knappen igjen for å se hemmeligheten på nytt, eller trykke neste spiller.";
         }
