@@ -3,7 +3,7 @@
  */
 
 (() => {
-  const APP_VERSION = "2026.06.21-7";
+  const APP_VERSION = "2026.06.21-8";
   const SW_PATH = "./sw.js";
 
   const STORAGE_KEYS = {
@@ -108,34 +108,38 @@
     const secretBox = document.getElementById("secretBox");
     if (!holdButton || !nextButton || !secretBox) return;
 
-    const restoreRevealButton = () => {
-      window.setTimeout(() => {
-        if (!reveal?.classList.contains("active")) return;
+    const setHiddenStableState = () => {
+      if (!reveal?.classList.contains("active")) return;
 
-        holdButton.hidden = false;
-        nextButton.hidden = false;
-        holdButton.textContent = "Hold for å se igjen";
+      holdButton.hidden = false;
+      nextButton.hidden = false;
+      holdButton.textContent = "Hold for å se igjen";
 
-        secretBox.innerHTML = `
-          <div style="display:grid;gap:10px;place-items:center;text-align:center;min-height:150px;">
-            <div style="font-family:Poppins,Arial,sans-serif;font-size:0.9rem;font-weight:800;color:var(--muted,#68655d);text-transform:uppercase;letter-spacing:.06em;">Skjult</div>
-            <div style="font-family:Poppins,Arial,sans-serif;font-size:clamp(1.45rem,7vw,2.15rem);font-weight:800;line-height:1.08;color:var(--text,#141413);">Gi telefonen videre</div>
-            <div style="font-size:0.98rem;line-height:1.45;color:var(--muted,#68655d);max-width:28ch;">Trykk «${nextButton.textContent || "Neste spiller"}» når telefonen er klar til å sendes videre.</div>
-          </div>
-        `;
+      secretBox.innerHTML = `
+        <div style="display:grid;gap:10px;place-items:center;text-align:center;min-height:150px;">
+          <div style="font-family:Poppins,Arial,sans-serif;font-size:0.9rem;font-weight:800;color:var(--muted,#68655d);text-transform:uppercase;letter-spacing:.06em;">Skjult</div>
+          <div style="font-family:Poppins,Arial,sans-serif;font-size:clamp(1.35rem,7vw,2rem);font-weight:800;line-height:1.1;color:var(--text,#141413);">Hemmeligheten er skjult</div>
+          <div style="font-size:0.98rem;line-height:1.45;color:var(--muted,#68655d);max-width:28ch;">Hold knappen igjen for å se på nytt, eller trykk knappen under for å gå videre.</div>
+        </div>
+      `;
 
-        if (helpText) {
-          helpText.textContent = "Du kan holde knappen igjen for å se hemmeligheten på nytt, eller trykke neste spiller.";
-        }
-      }, 0);
+      if (helpText) {
+        helpText.textContent = "Neste spiller-knappen ligger under.";
+      }
     };
 
-    holdButton.addEventListener("pointerup", restoreRevealButton);
-    holdButton.addEventListener("pointercancel", restoreRevealButton);
-    holdButton.addEventListener("lostpointercapture", restoreRevealButton);
+    const restoreRevealButton = () => {
+      queueMicrotask(setHiddenStableState);
+      requestAnimationFrame(setHiddenStableState);
+      window.setTimeout(setHiddenStableState, 40);
+    };
+
+    holdButton.addEventListener("pointerup", restoreRevealButton, true);
+    holdButton.addEventListener("pointercancel", restoreRevealButton, true);
+    holdButton.addEventListener("lostpointercapture", restoreRevealButton, true);
     holdButton.addEventListener("keyup", event => {
       if (event.key === " " || event.key === "Enter") restoreRevealButton();
-    });
+    }, true);
   }
 
   applyTheme();
