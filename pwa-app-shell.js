@@ -3,7 +3,7 @@
  */
 
 (() => {
-  const APP_VERSION = "2026.06.21-5";
+  const APP_VERSION = "2026.06.21-6";
   const SW_PATH = "./sw.js";
 
   const STORAGE_KEYS = {
@@ -79,6 +79,27 @@
     window.dispatchEvent(new CustomEvent("app-theme-change", { detail: { theme } }));
   }
 
+  function addVersionBadge() {
+    if (document.getElementById("appVersionBadge")) return;
+
+    const setup = document.getElementById("setup");
+    if (!setup) return;
+
+    const version = document.createElement("p");
+    version.id = "appVersionBadge";
+    version.textContent = `Versjon ${APP_VERSION}`;
+    version.style.margin = "10px 0 0";
+    version.style.textAlign = "center";
+    version.style.fontFamily = "Poppins, Arial, sans-serif";
+    version.style.fontSize = "0.78rem";
+    version.style.fontWeight = "700";
+    version.style.letterSpacing = "0.01em";
+    version.style.color = "var(--muted, #68655d)";
+    version.style.opacity = "0.9";
+
+    setup.appendChild(version);
+  }
+
   function keepRevealButtonReusable() {
     const holdButton = document.getElementById("holdRevealBtn");
     const nextButton = document.getElementById("nextPlayerBtn");
@@ -117,7 +138,10 @@
   window.AppShell.setTheme = setTheme;
   window.AppShell.showMessage = createAppMessage;
 
-  window.addEventListener("load", keepRevealButtonReusable);
+  window.addEventListener("load", () => {
+    addVersionBadge();
+    keepRevealButtonReusable();
+  });
 
   let deferredInstallPrompt = null;
 
