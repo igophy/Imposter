@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./pwa.css?v=2026.06.21-3">
+  <link rel="stylesheet" href="./pwa.css?v=2026.06.21-4">
   <style>
     :root {
       --dark: #141413;
@@ -204,6 +204,8 @@
     button.info { background: var(--info); color: var(--dark); box-shadow: 0 14px 28px rgba(106, 155, 204, .13); }
     button.ghost { background: transparent; color: var(--text); box-shadow: none; }
 
+    button[hidden] { display: none; }
+
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .stack { display: grid; gap: 13px; }
     .spacer { flex: 1; }
@@ -376,7 +378,8 @@
         <p>Hold knappen nede for å se hemmeligheten.</p>
       </div>
       <button id="holdRevealBtn" class="hold-button" type="button">Hold for å se hemmelighet</button>
-      <p class="small center">Når du slipper, skjules hemmeligheten og telefonen går videre.</p>
+      <button id="nextPlayerBtn" class="success" type="button" hidden>Neste spiller</button>
+      <p class="small center" id="revealHelp">Når du slipper, skjules hemmeligheten. Trykk deretter videre selv.</p>
     </section>
 
     <section id="play" class="screen">
@@ -606,6 +609,10 @@
       $("reveal").classList.remove("imposter-mode");
       $("roleBadge").textContent = "Klar";
       $("holdRevealBtn").classList.remove("is-holding");
+      $("holdRevealBtn").hidden = false;
+      $("nextPlayerBtn").hidden = true;
+      $("nextPlayerBtn").textContent = state.currentIndex + 1 >= state.players.length ? "Start runden" : "Neste spiller";
+      $("revealHelp").textContent = "Når du slipper, skjules hemmeligheten. Trykk deretter videre selv.";
       $("secretBox").innerHTML = `<p>Hold knappen nede for å se hemmeligheten.</p>`;
     }
 
@@ -640,7 +647,7 @@
 
     function startHoldingSecret(event) {
       event.preventDefault();
-      if (isHoldingSecret) return;
+      if (isHoldingSecret || $("holdRevealBtn").hidden) return;
       isHoldingSecret = true;
       $("holdRevealBtn").classList.add("is-holding");
       if (event.pointerId && event.currentTarget.setPointerCapture) {
@@ -655,10 +662,16 @@
       if (!isHoldingSecret) return;
       isHoldingSecret = false;
       $("holdRevealBtn").classList.remove("is-holding");
+      $("holdRevealBtn").hidden = true;
+      $("nextPlayerBtn").hidden = false;
+      $("nextPlayerBtn").textContent = state.currentIndex + 1 >= state.players.length ? "Start runden" : "Neste spiller";
       $("secretBox").innerHTML = `<p>Skjult.</p>`;
       $("reveal").classList.remove("imposter-mode");
+      $("roleBadge").textContent = "Skjult";
+      $("revealHelp").textContent = state.currentIndex + 1 >= state.players.length
+        ? "Alle har sett hemmeligheten. Trykk for å starte runden."
+        : "Gi telefonen videre først når du har trykket neste.";
       haptic(8);
-      setTimeout(nextPlayer, 180);
     }
 
     function nextPlayer() {
@@ -796,6 +809,7 @@
       $("backToSetupBtn").addEventListener("click", () => showScreen("setup"));
       $("startGameBtn").addEventListener("click", startGame);
       $("confirmPlayerBtn").addEventListener("click", confirmPlayer);
+      $("nextPlayerBtn").addEventListener("click", nextPlayer);
       $("showResultBtn").addEventListener("click", showResult);
       $("samePlayersBtn").addEventListener("click", restartSamePlayers);
       $("newGameBtn").addEventListener("click", resetAll);
@@ -823,6 +837,6 @@
     restore();
     bindEvents();
   </script>
-  <script src="./pwa-app-shell.js?v=2026.06.21-3" defer></script>
+  <script src="./pwa-app-shell.js?v=2026.06.21-4" defer></script>
 </body>
 </html>
