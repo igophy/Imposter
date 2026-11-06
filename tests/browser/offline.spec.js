@@ -32,7 +32,15 @@ test("an existing classic worker can install the update before any page refresh"
 }) => {
   const site = await testSite({ legacy: true });
   try {
+    let navigations = 0;
+    page.on("framenavigated", (frame) => {
+      if (frame === page.mainFrame()) navigations++;
+    });
     await page.goto(site.url);
+    // The old app reloads on its first controllerchange. Wait for that documented
+    // navigation rather than racing a page.evaluate against the outgoing document.
+    await expect.poll(() => navigations).toBe(2);
+    await page.waitForLoadState("load");
     await installed(page);
     await expect(page).toHaveTitle("Legacy Impostor");
     site.deploy("2");
