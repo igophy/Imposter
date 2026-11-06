@@ -1,97 +1,66 @@
-# PWA drop-in pakke
+# Impostor
 
-Denne pakken inneholder et enkelt, produksjonsnært PWA-oppsett du kan legge inn i en eksisterende statisk webapp.
+Et norsk bløffespill for 3–15 personer som spiller sammen med én telefon. Appen er en statisk nettside uten konto, backend eller byggesteg.
 
-## Filer
+## Spille
 
-- `manifest.webmanifest` – PWA-manifest
-- `sw.js` – service worker med versjonerte cacher, sletting av gamle cacher, `skipWaiting` og `clients.claim`
-- `pwa-app-shell.js` – installasjonsveiledning, iOS-veiledning, oppdateringsvarsel og tema-lagring
-- `pwa.css` – styling for meldingsbokser og enkel mørkemodus
-- `icons/` – grunnikoner for PWA og iPhone
-- `index-head-snippet.html` – kode som skal inn i `<head>`
-- `index-body-snippet.html` – kode som skal inn rett før `</body>`
-- `settings-snippet.html` – valgfritt eksempel for Innstillinger-side/flis
+1. Velg antall spillere, antall impostorer og kategori. Skriv inn navn, eller start direkte med den lagrede gjengen.
+2. Send telefonen til spilleren på skjermen. Hold knappen nede for å se rollen. Alternativt kan rollen vises i åtte sekunder med en egen knapp. Skjul før telefonen sendes videre.
+3. Startspilleren trekkes tilfeldig. Gå med klokken og gi ett kort hint hver, uten å si ordet, deler av det, rim eller oversettelser. Impostorene kjenner bare kategorien.
+4. Diskuter og stem samtidig. Verten markerer like mange mistenkte som det finnes impostorer. Ved uavgjort stemmer gruppen på nytt mellom de aktuelle spillerne.
+5. Bekreft gruppens valg. Spillerne vinner dersom alle impostorene blir funnet. Ellers vinner impostorene. Disse reglene har ingen ekstra gjetterunde.
 
-## Slik bruker du pakken
+Med 3–6 spillere brukes én impostor, med 7–9 opptil to og med 10–15 opptil tre. «Ny runde» beholder gjengen og oppsettet; «Endre oppsett» lar dere justere før neste runde.
 
-### 1. Kopier filer
+## Personvern og gjenopptakelse
 
-Legg disse filene samme sted som `index.html`, eller i `public/` hvis appen bygges med Vite/React:
+- Navn, oppsett, ordhistorikk og tema lagres lokalt i nettleseren. Ingen data sendes til en spillserver, og appen bruker ingen eksterne fonter eller analyseverktøy.
+- Den aktuelle runden og tidsuret lagres i fanens `sessionStorage`. Oppfriskning beholder runden, men en åpen hemmelighet gjenopptas alltid på overleveringsskjermen.
+- Slett lagrede navn fra Innstillinger. Hvis nettleseren blokkerer lagring, fungerer spillet i minnet frem til siden lukkes eller lastes på nytt.
+- Rollevisning skjules ved slipp, tapt fokus, appbytte og sidenavigasjon. Begge roller har samme utseende. Enheten skal fortsatt skjermes for andre mens man leser.
 
-```text
-manifest.webmanifest
-sw.js
-pwa-app-shell.js
-pwa.css
-icons/
+## Kjør lokalt
+
+Bruk Node.js 22 eller nyere:
+
+```sh
+npm ci
+npm start
 ```
 
-Hvis du bruker Vite, er det vanligvis riktig å legge dem i:
+Åpne `http://127.0.0.1:4173`. Produksjonen kan servere filene direkte over HTTPS, også under en undermappe som `/Imposter/` på GitHub Pages.
 
-```text
-public/
+## Tester
+
+```sh
+npm test
+npx playwright install chromium
+npm run test:browser
 ```
 
-slik at de havner i roten av ferdig build.
+Enhetstestene dekker blant annet rolleutdeling ved alle støttede gruppestørrelser, vinnerregler, ordstokker, tidsur og feil i lagring. Nettlesertestene dekker hele spillflyten, gjentatt rollevisning, fokusbytte, lange navn og ord, mobilbredder, omspill, gjenopptakelse og offlineoppdateringer i lyst og mørkt tema.
 
-### 2. Legg inn head-kode
+`IMPOSTOR_CHROMIUM_PATH` kan peke på en eksisterende Chromium-installasjon i testmiljøer. CI kjører både enhetstester og nettlesertester ved endringer på `main` og i pull requests. Installasjon og oppførsel på fysisk iPhone og Android må i tillegg kontrolleres på enhetene.
 
-Kopier innholdet fra:
+## Kode
 
-```text
-index-head-snippet.html
-```
+| Fil                     | Ansvar                                                                                  |
+| ----------------------- | --------------------------------------------------------------------------------------- |
+| `index.html`, `app.css` | Skjermer, dialoger og responsivt utseende                                               |
+| `app.js`                | Skjermflyt, rollevisning og brukerhandlinger                                            |
+| `game.js`               | Rene funksjoner for runder, vinnerregler, tidsur og validering av gjenopptakelse        |
+| `words.js`              | Fem ordkategorier og uttrekk uten gjentakelse; «Blandet» er unionen av alle kategoriene |
+| `storage.js`            | Lokal lagring med minne som reserve ved feil                                            |
+| `app-shell.js`          | Tema, installasjon og oppdateringsmeldinger                                             |
+| `sw.js`                 | Versjonert offlinepakke og trygg aktivering                                             |
+| `app-info.js`           | Appnavn og én felles versjonsverdi                                                      |
 
-og lim det inn i `<head>` i `index.html`.
+## Publisering og oppdatering
 
-### 3. Legg inn body-kode
+1. Endre `version` i `app-info.js` ved hver publisering. Publiser alle kildefiler og ikoner samlet. Service workeren beholder klassisk registrering slik at også tidligere installerte utgaver kan hente oppdateringen.
+2. Den nye service workeren laster ned hele offlinepakken. En feil i nedlastingen avviser installasjonen og beholder gjeldende pakke.
+3. En ferdig nedlastet oppdatering venter. Meldingen vises når ingen runde pågår. Bare et eksplisitt trykk på «Oppdater» aktiverer og laster siden på nytt. «Senere» lar oppdateringen vente.
+4. Første installasjon laster ikke siden på nytt. Hvis en annen fane aktiverer en oppdatering, lastes en pågående runde heller ikke automatisk på nytt.
+5. Kun gamle cacher med appens eget `impostor-shell-`-prefiks ryddes bort. Appen serverer én komplett installert versjon frem til neste blir akseptert.
 
-Kopier innholdet fra:
-
-```text
-index-body-snippet.html
-```
-
-og lim det inn rett før `</body>` i `index.html`.
-
-### 4. Tilpass appnavn
-
-Bytt `App` til riktig appnavn i:
-
-- `manifest.webmanifest`
-- `index-head-snippet.html`
-
-### 5. Ved ny deploy / ny versjon
-
-Oppdater versjon på disse stedene:
-
-- `CACHE_VERSION` i `sw.js`
-- `APP_VERSION` i `pwa-app-shell.js`
-- querystring i `index-head-snippet.html` og `index-body-snippet.html`, f.eks. `?v=2026.06.20-1`
-
-Du kan bruke dato, f.eks.:
-
-```text
-2026.06.20-2
-```
-
-## Viktige merknader
-
-- Service worker cacher bare trygge statiske filer.
-- Den prøver nett først på navigasjon, slik at nye deploys normalt overstyrer gammel cache.
-- Den forsøker å ikke cache `/api/`, `/admin/`, `/feedback` eller `/tilbakemelding`.
-- iPhone får egen installasjonsveiledning fordi iOS ikke bruker vanlig `beforeinstallprompt`.
-- Tema lagres i `localStorage` som `app_theme` med verdiene `light`, `dark` eller `auto`.
-
-## Test etterpå
-
-Sjekk dette etter deploy:
-
-1. Appen åpner som før.
-2. Ingen console-feil.
-3. `manifest.webmanifest` kan åpnes i nettleseren.
-4. `sw.js` kan åpnes i nettleseren.
-5. Service worker registreres i DevTools/Application.
-6. iPhone viser apple-touch-icon når appen legges til på Hjem-skjerm.
-7. Ny versjon gir oppdateringsmelding etter deploy.
+PNG-ikonene er rasterversjoner av `icon.svg`. `maskable-512.png` har ekstra marg for beskjæring på hjemskjermer, og `apple-touch-icon.png` brukes på iPhone/iPad.
