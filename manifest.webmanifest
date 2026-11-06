@@ -1,19 +1,32 @@
 {
-  "name": "impostor",
-  "short_name": "impostor",
+  "id": "./",
+  "name": "Impostor",
+  "short_name": "Impostor",
   "description": "Norsk partyspill for mobil og hjemskjerm.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#03070a",
-  "theme_color": "#03070a",
+  "background_color": "#faf9f5",
+  "theme_color": "#faf9f5",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "./icon.svg",
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

@@ -1,0 +1,19 @@
+{
+  "name": "impostor",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/serve.js",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "node --test tests/unit/*.test.js",
+    "test:browser": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1",
+    "prettier": "3.9.10"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
